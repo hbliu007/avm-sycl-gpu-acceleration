@@ -223,7 +223,7 @@ void idct4_kernel(tran_low_t* row) {
 // Forward 8x8 DCT Implementation
 // ============================================================================
 
-void fdct8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct8x8(::sycl::queue& q, const int16_t* input, tran_low_t* output,
              int stride, const TxfmParams& params) {
   constexpr int kSize = 8;
   const int bd = params.bd;
@@ -237,8 +237,8 @@ void fdct8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
   q.memcpy(input_dev, input, kSize * stride * sizeof(int16_t)).wait();
 
   // Stage 1: Row transform (read from input, write to temp)
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int row = idx[0];
       const int col = idx[1];
 
@@ -264,8 +264,8 @@ void fdct8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }).wait();
 
   // Stage 2: Column transform (read from temp, write to output)
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int col = idx[1];
 
       // Only process once per column (using first row as anchor)
@@ -291,16 +291,16 @@ void fdct8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
   q.memcpy(output, output_dev, kSize * kSize * sizeof(tran_low_t)).wait();
 
   // Free device memory
-  sycl::free(input_dev, q);
-  sycl::free(temp_dev, q);
-  sycl::free(output_dev, q);
+  ::sycl::free(input_dev, q);
+  ::sycl::free(temp_dev, q);
+  ::sycl::free(output_dev, q);
 }
 
 // ============================================================================
 // Inverse 8x8 DCT Implementation
 // ============================================================================
 
-void idct8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct8x8(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
              int stride, const TxfmParams& params) {
   constexpr int kSize = 8;
   const int bd = params.bd;
@@ -317,8 +317,8 @@ void idct8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   q.memcpy(input_dev, input, kSize * kSize * sizeof(tran_low_t)).wait();
 
   // Stage 1: Column transform (inverse)
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int col = idx[1];
 
       if (idx[0] != 0) return;
@@ -340,8 +340,8 @@ void idct8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   }).wait();
 
   // Stage 2: Row transform (inverse) and final output
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int row = idx[0];
       const int col = idx[1];
 
@@ -369,16 +369,16 @@ void idct8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   q.memcpy(output, output_dev, kSize * stride * sizeof(uint16_t)).wait();
 
   // Free device memory
-  sycl::free(input_dev, q);
-  sycl::free(temp_dev, q);
-  sycl::free(output_dev, q);
+  ::sycl::free(input_dev, q);
+  ::sycl::free(temp_dev, q);
+  ::sycl::free(output_dev, q);
 }
 
 // ============================================================================
 // Forward 4x4 DCT Implementation
 // ============================================================================
 
-void fdct4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct4x4(::sycl::queue& q, const int16_t* input, tran_low_t* output,
              int stride, const TxfmParams& params) {
   constexpr int kSize = 4;
   const int bd = params.bd;
@@ -390,8 +390,8 @@ void fdct4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
   q.memcpy(input_dev, input, kSize * stride * sizeof(int16_t)).wait();
 
   // Row transform
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int row = idx[0];
       const int col = idx[1];
 
@@ -409,8 +409,8 @@ void fdct4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }).wait();
 
   // Column transform
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int col = idx[1];
 
       if (idx[0] != 0) return;
@@ -430,16 +430,16 @@ void fdct4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
 
   q.memcpy(output, output_dev, kSize * kSize * sizeof(tran_low_t)).wait();
 
-  sycl::free(input_dev, q);
-  sycl::free(temp_dev, q);
-  sycl::free(output_dev, q);
+  ::sycl::free(input_dev, q);
+  ::sycl::free(temp_dev, q);
+  ::sycl::free(output_dev, q);
 }
 
 // ============================================================================
 // Inverse 4x4 DCT Implementation
 // ============================================================================
 
-void idct4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct4x4(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
              int stride, const TxfmParams& params) {
   constexpr int kSize = 4;
   const int bd = params.bd;
@@ -452,8 +452,8 @@ void idct4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   q.memcpy(input_dev, input, kSize * kSize * sizeof(tran_low_t)).wait();
 
   // Column transform
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int col = idx[1];
 
       if (idx[0] != 0) return;
@@ -472,8 +472,8 @@ void idct4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   }).wait();
 
   // Row transform and output
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<2>(kSize, kSize), [=](sycl::id<2> idx) {
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<2>(kSize, kSize), [=](::sycl::id<2> idx) {
       const int row = idx[0];
       const int col = idx[1];
 
@@ -495,16 +495,16 @@ void idct4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
 
   q.memcpy(output, output_dev, kSize * stride * sizeof(uint16_t)).wait();
 
-  sycl::free(input_dev, q);
-  sycl::free(temp_dev, q);
-  sycl::free(output_dev, q);
+  ::sycl::free(input_dev, q);
+  ::sycl::free(temp_dev, q);
+  ::sycl::free(output_dev, q);
 }
 
 // ============================================================================
 // Placeholder implementations for larger transforms
 // ============================================================================
 
-void fdct16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct16x16(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                int stride, const TxfmParams& params) {
   // TODO: Implement 16x16 DCT using 8-point DCT building blocks
   // For now, fall back to CPU implementation
@@ -516,7 +516,7 @@ void fdct16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void fdct32x32(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct32x32(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                int stride, const TxfmParams& params) {
   // TODO: Implement 32x32 DCT
   constexpr int kSize = 32;
@@ -527,7 +527,7 @@ void fdct32x32(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void fdct64x64(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct64x64(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                int stride, const TxfmParams& params) {
   // TODO: Implement 64x64 DCT
   constexpr int kSize = 64;
@@ -538,7 +538,7 @@ void fdct64x64(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void idct16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct16x16(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                int stride, const TxfmParams& params) {
   // TODO: Implement 16x16 IDCT
   constexpr int kSize = 16;
@@ -550,7 +550,7 @@ void idct16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   }
 }
 
-void idct32x32(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct32x32(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                int stride, const TxfmParams& params) {
   // TODO: Implement 32x32 IDCT
   constexpr int kSize = 32;
@@ -562,7 +562,7 @@ void idct32x32(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   }
 }
 
-void idct64x64(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct64x64(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                int stride, const TxfmParams& params) {
   // TODO: Implement 64x64 IDCT
   constexpr int kSize = 64;
@@ -578,7 +578,7 @@ void idct64x64(sycl::queue& q, const tran_low_t* input, uint16_t* output,
 // ADST Implementations (Placeholders)
 // ============================================================================
 
-void fadst4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fadst4x4(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params) {
   // TODO: Implement 4x4 ADST
   constexpr int kSize = 4;
@@ -589,7 +589,7 @@ void fadst4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void fadst8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fadst8x8(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params) {
   // TODO: Implement 8x8 ADST
   constexpr int kSize = 8;
@@ -600,7 +600,7 @@ void fadst8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void fadst16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fadst16x16(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                 int stride, const TxfmParams& params) {
   // TODO: Implement 16x16 ADST
   constexpr int kSize = 16;
@@ -611,7 +611,7 @@ void fadst16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void iadst4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void iadst4x4(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
               int stride, const TxfmParams& params) {
   // TODO: Implement 4x4 IADST
   constexpr int kSize = 4;
@@ -623,7 +623,7 @@ void iadst4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   }
 }
 
-void iadst8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void iadst8x8(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
               int stride, const TxfmParams& params) {
   // TODO: Implement 8x8 IADST
   constexpr int kSize = 8;
@@ -635,7 +635,7 @@ void iadst8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
   }
 }
 
-void iadst16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void iadst16x16(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                 int stride, const TxfmParams& params) {
   // TODO: Implement 16x16 IADST
   constexpr int kSize = 16;
@@ -651,7 +651,7 @@ void iadst16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
 // Identity Transform (IDTX) Implementations
 // ============================================================================
 
-void fidtx4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fidtx4x4(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params) {
   // Identity transform: pass-through with scaling
   constexpr int kSize = 4;
@@ -662,7 +662,7 @@ void fidtx4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void fidtx8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fidtx8x8(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params) {
   constexpr int kSize = 8;
   for (int r = 0; r < kSize; ++r) {
@@ -672,7 +672,7 @@ void fidtx8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void fidtx16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fidtx16x16(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                 int stride, const TxfmParams& params) {
   constexpr int kSize = 16;
   for (int r = 0; r < kSize; ++r) {
@@ -686,7 +686,7 @@ void fidtx16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
 // Hybrid Transform Implementations
 // ============================================================================
 
-void hybrid_fwd_txfm(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void hybrid_fwd_txfm(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                      int stride, const TxfmParams& params, TxfmType row_type,
                      TxfmType col_type) {
   // Select appropriate transform based on types
@@ -713,7 +713,7 @@ void hybrid_fwd_txfm(sycl::queue& q, const int16_t* input, tran_low_t* output,
   }
 }
 
-void hybrid_inv_txfm(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void hybrid_inv_txfm(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                      int stride, const TxfmParams& params, TxfmType row_type,
                      TxfmType col_type) {
   switch (params.tx_size) {

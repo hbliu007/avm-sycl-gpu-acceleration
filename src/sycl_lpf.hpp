@@ -60,7 +60,7 @@ struct LpfParams {
 /// @param pitch Stride between rows in pixels
 /// @param params Filter parameters
 /// @param count Number of pixels to filter (typically 4 or 8)
-void lpf_horizontal_4(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_4(::sycl::queue& q, uint16_t* s, int pitch,
                       const LpfParams& params, int count = 4);
 
 /// @brief Apply horizontal loop filter with width 8 (LPF_HORIZONTAL_8)
@@ -69,7 +69,7 @@ void lpf_horizontal_4(sycl::queue& q, uint16_t* s, int pitch,
 /// @param pitch Stride between rows in pixels
 /// @param params Filter parameters
 /// @param count Number of pixels to filter
-void lpf_horizontal_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_8(::sycl::queue& q, uint16_t* s, int pitch,
                       const LpfParams& params, int count = 8);
 
 /// @brief Apply horizontal loop filter with width 14 (LPF_HORIZONTAL_14)
@@ -78,7 +78,7 @@ void lpf_horizontal_8(sycl::queue& q, uint16_t* s, int pitch,
 /// @param pitch Stride between rows in pixels
 /// @param params Filter parameters
 /// @param count Number of pixels to filter
-void lpf_horizontal_14(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_14(::sycl::queue& q, uint16_t* s, int pitch,
                        const LpfParams& params, int count = 4);
 
 // ============================================================================
@@ -91,7 +91,7 @@ void lpf_horizontal_14(sycl::queue& q, uint16_t* s, int pitch,
 /// @param pitch Stride between rows in pixels
 /// @param params Filter parameters
 /// @param count Number of pixels to filter (typically 4 or 8)
-void lpf_vertical_4(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_4(::sycl::queue& q, uint16_t* s, int pitch,
                     const LpfParams& params, int count = 4);
 
 /// @brief Apply vertical loop filter with width 8 (LPF_VERTICAL_8)
@@ -100,7 +100,7 @@ void lpf_vertical_4(sycl::queue& q, uint16_t* s, int pitch,
 /// @param pitch Stride between rows in pixels
 /// @param params Filter parameters
 /// @param count Number of pixels to filter
-void lpf_vertical_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_8(::sycl::queue& q, uint16_t* s, int pitch,
                     const LpfParams& params, int count = 8);
 
 /// @brief Apply vertical loop filter with width 14 (LPF_VERTICAL_14)
@@ -109,7 +109,7 @@ void lpf_vertical_8(sycl::queue& q, uint16_t* s, int pitch,
 /// @param pitch Stride between rows in pixels
 /// @param params Filter parameters
 /// @param count Number of pixels to filter
-void lpf_vertical_14(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_14(::sycl::queue& q, uint16_t* s, int pitch,
                      const LpfParams& params, int count = 4);
 
 // ============================================================================
@@ -122,7 +122,7 @@ void lpf_vertical_14(sycl::queue& q, uint16_t* s, int pitch,
 /// @param pitch Stride between rows in pixels
 /// @param params_h Horizontal filter parameters
 /// @param params_v Vertical filter parameters
-void lpf_dual(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_dual(::sycl::queue& q, uint16_t* s, int pitch,
               const LpfParams& params_h, const LpfParams& params_v);
 
 /// @brief Apply horizontal and vertical filters for a block (width 8)
@@ -132,7 +132,7 @@ void lpf_dual(sycl::queue& q, uint16_t* s, int pitch,
 /// @param params Filter parameters
 /// @param width Block width in pixels
 /// @param height Block height in pixels
-void lpf_horizontal_edge_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_edge_8(::sycl::queue& q, uint16_t* s, int pitch,
                            const LpfParams& params, int width, int height);
 
 /// @brief Apply vertical and horizontal filters for a block (width 8)
@@ -142,7 +142,7 @@ void lpf_horizontal_edge_8(sycl::queue& q, uint16_t* s, int pitch,
 /// @param params Filter parameters
 /// @param width Block width in pixels
 /// @param height Block height in pixels
-void lpf_vertical_edge_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_edge_8(::sycl::queue& q, uint16_t* s, int pitch,
                          const LpfParams& params, int width, int height);
 
 // ============================================================================
@@ -159,7 +159,7 @@ void lpf_vertical_edge_8(sycl::queue& q, uint16_t* s, int pitch,
 /// @param side_thresh Side threshold
 /// @param t Corresponding pixels in adjacent block
 /// @return Number of samples to filter (0 to MAX_DBL_FLT_LEN)
-int filt_choice(sycl::queue& q, uint16_t* s, int pitch,
+int filt_choice(::sycl::queue& q, uint16_t* s, int pitch,
                 int max_filt_neg, int max_filt_pos,
                 uint16_t q_thresh, uint16_t side_thresh, uint16_t* t);
 
@@ -174,7 +174,7 @@ int filt_choice(sycl::queue& q, uint16_t* s, int pitch,
 /// @param params Array of filter parameters for each edge
 /// @param num_edges Number of edges to process
 /// @param width Filter width (4, 8, or 14)
-void batch_lpf_horizontal(sycl::queue& q, uint16_t** edges, int pitch,
+void batch_lpf_horizontal(::sycl::queue& q, uint16_t** edges, int pitch,
                           const LpfParams* params, int num_edges, int width);
 
 /// @brief Apply vertical filter to multiple edges in parallel
@@ -184,7 +184,7 @@ void batch_lpf_horizontal(sycl::queue& q, uint16_t** edges, int pitch,
 /// @param params Array of filter parameters for each edge
 /// @param num_edges Number of edges to process
 /// @param width Filter width (4, 8, or 14)
-void batch_lpf_vertical(sycl::queue& q, uint16_t** edges, int pitch,
+void batch_lpf_vertical(::sycl::queue& q, uint16_t** edges, int pitch,
                         const LpfParams* params, int num_edges, int width);
 
 // ============================================================================

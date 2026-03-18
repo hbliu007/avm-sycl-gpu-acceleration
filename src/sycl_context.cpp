@@ -31,7 +31,7 @@ bool SYCLContext::initialize() {
 
     try {
         // Get all available devices
-        auto devices = ::sycl::device::get_devices(::sycl::info::device_type::all);
+        auto devices = ::::sycl::device::get_devices(::sycl::info::device_type::all);
 
         if (devices.empty()) {
             std::cerr << "[SYCL] No devices found" << std::endl;
@@ -47,7 +47,7 @@ bool SYCLContext::initialize() {
         }
 
         // Create queue with profiling enabled
-        queue_ = ::sycl::queue(device_,
+        queue_ = ::::sycl::queue(device_,
             ::sycl::property::queue::enable_profiling{});
 
         // Store device properties
@@ -70,14 +70,14 @@ bool SYCLContext::initialize() {
 
         return true;
 
-    } catch (const ::sycl::exception& e) {
+    } catch (const ::::sycl::exception& e) {
         std::cerr << "[SYCL] Initialization failed: " << e.what() << std::endl;
         available_ = false;
         return false;
     }
 }
 
-int SYCLContext::score_device(const ::sycl::device& dev) {
+int SYCLContext::score_device(const ::::sycl::device& dev) {
     int score = 0;
 
     // GPU is strongly preferred
@@ -111,10 +111,10 @@ int SYCLContext::score_device(const ::sycl::device& dev) {
     return score;
 }
 
-::sycl::device SYCLContext::select_best_device() {
-    auto devices = ::sycl::device::get_devices(::sycl::info::device_type::all);
+::::sycl::device SYCLContext::select_best_device() {
+    auto devices = ::::sycl::device::get_devices(::sycl::info::device_type::all);
 
-    ::sycl::device best = devices[0];
+    ::::sycl::device best = devices[0];
     int best_score = score_device(best);
 
     for (auto& dev : devices) {
@@ -131,7 +131,7 @@ int SYCLContext::score_device(const ::sycl::device& dev) {
 std::vector<PlatformInfo> SYCLContext::list_devices() {
     std::vector<PlatformInfo> infos;
 
-    auto devices = ::sycl::device::get_devices(::sycl::info::device_type::all);
+    auto devices = ::::sycl::device::get_devices(::sycl::info::device_type::all);
 
     for (auto& dev : devices) {
         PlatformInfo info;

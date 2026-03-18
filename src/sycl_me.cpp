@@ -25,7 +25,7 @@ class SAD16x16Kernel;
 
 /// @brief 4x4 SAD kernel using local memory for cache optimization
 /// Each work-group processes one position, work-items process rows in parallel
-void sad4x4(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad4x4(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params) {
   const int block_size = 4;
@@ -36,23 +36,23 @@ void sad4x4(sycl::queue& q, const uint16_t* src, int src_stride,
   constexpr size_t local_src_size = 4 * 4;
   constexpr size_t local_ref_size = 4 * 4;
 
-  sycl::buffer<uint16_t, 1> src_buf(src, src_stride * block_size);
-  sycl::buffer<uint16_t, 1> ref_buf(ref, ref_stride * (block_size + 2 * search_range));
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint16_t, 1> src_buf(src, src_stride * block_size);
+  ::sycl::buffer<uint16_t, 1> ref_buf(ref, ref_stride * (block_size + 2 * search_range));
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 1, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<1>(local_src_size), cgh);
-    sycl::accessor<uint16_t, 1, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<1>(local_ref_size), cgh);
+    ::sycl::accessor<uint16_t, 1, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<1>(local_src_size), cgh);
+    ::sycl::accessor<uint16_t, 1, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<1>(local_ref_size), cgh);
 
     // Each work-group processes one search position
     // Work-items within group process rows in parallel
-    auto kern = [&](sycl::nd_item<1> item) {
+    auto kern = [&](::sycl::nd_item<1> item) {
       const int gid = item.get_global_id(0);
       const int lid = item.get_local_id(0);
       const int group_size = item.get_local_range(0);
@@ -79,7 +79,7 @@ void sad4x4(sycl::queue& q, const uint16_t* src, int src_stride,
         local_ref[i] = ref_acc[(ref_y + dy + y) * ref_stride + (ref_x + dx + x)];
       }
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       // Compute SAD with parallel reduction
       uint32_t partial_sad = 0;
@@ -88,7 +88,7 @@ void sad4x4(sycl::queue& q, const uint16_t* src, int src_stride,
       }
 
       // Reduce within work-group
-      auto group_sad = sycl::reduce_over_group(item.get_group(), partial_sad, sycl::plus<>());
+      auto group_sad = sycl::reduce_over_group(item.get_group(), partial_sad, ::sycl::plus<>());
 
       if (lid == 0) {
         results_acc[gid] = group_sad;
@@ -103,7 +103,7 @@ void sad4x4(sycl::queue& q, const uint16_t* src, int src_stride,
 }
 
 /// @brief 16x16 SAD kernel with optimized local memory access
-void sad16x16(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad16x16(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params) {
   const int block_size = 16;
@@ -111,27 +111,27 @@ void sad16x16(sycl::queue& q, const uint16_t* src, int src_stride,
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
   // Use 2D work-groups for 16x16 blocks
-  sycl::range<2> local_size{16, 16};  // 16x16 work-group
+  ::sycl::range<2> local_size{16, 16};  // 16x16 work-group
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{block_size, block_size},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{block_size, block_size},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
     // Local memory for tiling
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{16, 16}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{16, 16}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int lid_x = item.get_local_id(0);
       const int lid_y = item.get_local_id(1);
@@ -148,14 +148,14 @@ void sad16x16(sycl::queue& q, const uint16_t* src, int src_stride,
       // Load reference tile with offset
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + lid_y][ref_x + dx + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       // Compute SAD for this pixel
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
 
       // Reduce within work-group (2D tree reduction)
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       // Write result (only first work-item)
       if (lid_x == 0 && lid_y == 0) {
@@ -172,7 +172,7 @@ void sad16x16(sycl::queue& q, const uint16_t* src, int src_stride,
 }
 
 /// @brief 8x8 SAD kernel
-void sad8x8(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad8x8(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params) {
   const int block_size = 8;
@@ -180,26 +180,26 @@ void sad8x8(sycl::queue& q, const uint16_t* src, int src_stride,
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
   // 8x8 work-group with 2D local memory
-  sycl::range<2> local_size{8, 8};
+  ::sycl::range<2> local_size{8, 8};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{block_size, block_size},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{block_size, block_size},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{8, 8}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{8, 8}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{8, 8}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{8, 8}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int lid_x = item.get_local_id(0);
       const int lid_y = item.get_local_id(1);
@@ -212,11 +212,11 @@ void sad8x8(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[lid_y][lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + lid_y][ref_x + dx + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0) {
         results_acc[gid] = tile_sad;
@@ -232,7 +232,7 @@ void sad8x8(sycl::queue& q, const uint16_t* src, int src_stride,
 }
 
 /// @brief 32x32 SAD kernel (using 16x16 tiles)
-void sad32x32(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad32x32(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params) {
   const int block_size = 32;
@@ -240,26 +240,26 @@ void sad32x32(sycl::queue& q, const uint16_t* src, int src_stride,
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
   // Process 32x32 as four 16x16 tiles
-  sycl::range<2> local_size{16, 16};
+  ::sycl::range<2> local_size{16, 16};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{block_size, block_size},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{block_size, block_size},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{16, 16}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{16, 16}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int tile_id = item.get_group(2);  // 0-3 for four tiles
       const int lid_x = item.get_local_id(0);
@@ -277,13 +277,13 @@ void sad32x32(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[tile_y + lid_y][tile_x + lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + tile_y + lid_y][ref_x + dx + tile_x + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
 
       // Reduce to 32x32 result (accumulate across tiles)
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0 && tile_id == 0) {
         // Need atomic add for tile accumulation or use group reduction
@@ -308,7 +308,7 @@ void sad32x32(sycl::queue& q, const uint16_t* src, int src_stride,
 }
 
 /// @brief 64x64 SAD kernel (using 16x16 tiles)
-void sad64x64(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad64x64(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params) {
   // Process 64x64 as sixteen 16x16 tiles
@@ -316,26 +316,26 @@ void sad64x64(sycl::queue& q, const uint16_t* src, int src_stride,
   const int search_range = params.search_range;
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
-  sycl::range<2> local_size{16, 16};
+  ::sycl::range<2> local_size{16, 16};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{block_size, block_size},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{block_size, block_size},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{block_size + 2*search_range, block_size + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions * 16);  // 16 tiles per position
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions * 16);  // 16 tiles per position
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{16, 16}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{16, 16}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int tile_id = item.get_group(2);  // 0-15 for sixteen tiles
       const int lid_x = item.get_local_id(0);
@@ -352,12 +352,12 @@ void sad64x64(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[tile_y + lid_y][tile_x + lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + tile_y + lid_y][ref_x + dx + tile_x + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
 
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0) {
         results_acc[gid * 16 + tile_id] = tile_sad;
@@ -386,28 +386,28 @@ void sad64x64(sycl::queue& q, const uint16_t* src, int src_stride,
 // Rectangular Block SAD Kernels
 // ============================================================================
 
-void sad4x8(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad4x8(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params) {
   const int width = 4, height = 8;
   const int search_range = params.search_range;
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
-  sycl::buffer<uint16_t, 1> src_buf(src, src_stride * height);
-  sycl::buffer<uint16_t, 1> ref_buf(ref, ref_stride * (height + 2 * search_range));
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint16_t, 1> src_buf(src, src_stride * height);
+  ::sycl::buffer<uint16_t, 1> ref_buf(ref, ref_stride * (height + 2 * search_range));
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 1, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<1>(width * height), cgh);
-    sycl::accessor<uint16_t, 1, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<1>(width * height), cgh);
+    ::sycl::accessor<uint16_t, 1, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<1>(width * height), cgh);
+    ::sycl::accessor<uint16_t, 1, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<1>(width * height), cgh);
 
-    auto kern = [&](sycl::nd_item<1> item) {
+    auto kern = [&](::sycl::nd_item<1> item) {
       const int gid = item.get_global_id(0);
       const int lid = item.get_local_id(0);
       const int group_size = item.get_local_range(0);
@@ -424,14 +424,14 @@ void sad4x8(sycl::queue& q, const uint16_t* src, int src_stride,
         local_ref[i] = ref_acc[(ref_y + dy + y) * ref_stride + (ref_x + dx + x)];
       }
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t partial_sad = 0;
       for (int i = lid; i < width * height; i += group_size) {
         partial_sad += sycl::abs(local_src[i] - local_ref[i]);
       }
 
-      auto group_sad = sycl::reduce_over_group(item.get_group(), partial_sad, sycl::plus<>());
+      auto group_sad = sycl::reduce_over_group(item.get_group(), partial_sad, ::sycl::plus<>());
       if (lid == 0) {
         results_acc[gid] = group_sad;
       }
@@ -443,28 +443,28 @@ void sad4x8(sycl::queue& q, const uint16_t* src, int src_stride,
   });
 }
 
-void sad8x4(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad8x4(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params) {
   const int width = 8, height = 4;
   const int search_range = params.search_range;
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
-  sycl::buffer<uint16_t, 1> src_buf(src, src_stride * height);
-  sycl::buffer<uint16_t, 1> ref_buf(ref, ref_stride * (height + 2 * search_range));
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint16_t, 1> src_buf(src, src_stride * height);
+  ::sycl::buffer<uint16_t, 1> ref_buf(ref, ref_stride * (height + 2 * search_range));
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 1, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<1>(width * height), cgh);
-    sycl::accessor<uint16_t, 1, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<1>(width * height), cgh);
+    ::sycl::accessor<uint16_t, 1, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<1>(width * height), cgh);
+    ::sycl::accessor<uint16_t, 1, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<1>(width * height), cgh);
 
-    auto kern = [&](sycl::nd_item<1> item) {
+    auto kern = [&](::sycl::nd_item<1> item) {
       const int gid = item.get_global_id(0);
       const int lid = item.get_local_id(0);
       const int group_size = item.get_local_range(0);
@@ -481,14 +481,14 @@ void sad8x4(sycl::queue& q, const uint16_t* src, int src_stride,
         local_ref[i] = ref_acc[(ref_y + dy + y) * ref_stride + (ref_x + dx + x)];
       }
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t partial_sad = 0;
       for (int i = lid; i < width * height; i += group_size) {
         partial_sad += sycl::abs(local_src[i] - local_ref[i]);
       }
 
-      auto group_sad = sycl::reduce_over_group(item.get_group(), partial_sad, sycl::plus<>());
+      auto group_sad = sycl::reduce_over_group(item.get_group(), partial_sad, ::sycl::plus<>());
       if (lid == 0) {
         results_acc[gid] = group_sad;
       }
@@ -500,33 +500,33 @@ void sad8x4(sycl::queue& q, const uint16_t* src, int src_stride,
   });
 }
 
-void sad8x16(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad8x16(::sycl::queue& q, const uint16_t* src, int src_stride,
              const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
              uint32_t* results, const MEParams& params) {
   const int width = 8, height = 16;
   const int search_range = params.search_range;
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
-  sycl::range<2> local_size{8, 16};
+  ::sycl::range<2> local_size{8, 16};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{height, width},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{height, width},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{height + 2*search_range, width + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{height + 2*search_range, width + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{height, width}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{height, width}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{height, width}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{height, width}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int lid_x = item.get_local_id(0);
       const int lid_y = item.get_local_id(1);
@@ -539,11 +539,11 @@ void sad8x16(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[lid_y][lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + lid_y][ref_x + dx + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0) {
         results_acc[gid] = tile_sad;
@@ -558,33 +558,33 @@ void sad8x16(sycl::queue& q, const uint16_t* src, int src_stride,
   });
 }
 
-void sad16x8(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad16x8(::sycl::queue& q, const uint16_t* src, int src_stride,
              const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
              uint32_t* results, const MEParams& params) {
   const int width = 16, height = 8;
   const int search_range = params.search_range;
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
-  sycl::range<2> local_size{16, 8};
+  ::sycl::range<2> local_size{16, 8};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{height, width},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{height, width},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{height + 2*search_range, width + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{height + 2*search_range, width + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{height, width}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{height, width}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{height, width}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{height, width}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int lid_x = item.get_local_id(0);
       const int lid_y = item.get_local_id(1);
@@ -597,11 +597,11 @@ void sad16x8(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[lid_y][lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + lid_y][ref_x + dx + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0) {
         results_acc[gid] = tile_sad;
@@ -616,7 +616,7 @@ void sad16x8(sycl::queue& q, const uint16_t* src, int src_stride,
   });
 }
 
-void sad16x32(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad16x32(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params) {
   const int width = 16, height = 32;
@@ -624,26 +624,26 @@ void sad16x32(sycl::queue& q, const uint16_t* src, int src_stride,
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
   // Process as two 16x16 tiles
-  sycl::range<2> local_size{16, 16};
+  ::sycl::range<2> local_size{16, 16};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{height, width},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{height, width},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{height + 2*search_range, width + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{height + 2*search_range, width + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions * 2);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions * 2);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{16, 16}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{16, 16}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int tile_id = item.get_group(2);
       const int lid_x = item.get_local_id(0);
@@ -659,11 +659,11 @@ void sad16x32(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[tile_y + lid_y][lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + tile_y + lid_y][ref_x + dx + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0) {
         results_acc[gid * 2 + tile_id] = tile_sad;
@@ -683,7 +683,7 @@ void sad16x32(sycl::queue& q, const uint16_t* src, int src_stride,
   }
 }
 
-void sad32x16(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad32x16(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params) {
   const int width = 32, height = 16;
@@ -691,26 +691,26 @@ void sad32x16(sycl::queue& q, const uint16_t* src, int src_stride,
   const int num_positions = (2 * search_range + 1) * (2 * search_range + 1);
 
   // Process as two 16x16 tiles
-  sycl::range<2> local_size{16, 16};
+  ::sycl::range<2> local_size{16, 16};
 
-  sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, sycl::range<2>{height, width},
+  ::sycl::buffer<uint16_t, 2> src_buf((uint16_t*)src, ::sycl::range<2>{height, width},
                                      {src_stride, 1});
-  sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
-                                     sycl::range<2>{height + 2*search_range, width + 2*search_range},
+  ::sycl::buffer<uint16_t, 2> ref_buf((uint16_t*)ref,
+                                     ::sycl::range<2>{height + 2*search_range, width + 2*search_range},
                                      {ref_stride, 1});
-  sycl::buffer<uint32_t, 1> results_buf(results, num_positions * 2);
+  ::sycl::buffer<uint32_t, 1> results_buf(results, num_positions * 2);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto src_acc = src_buf.get_access<sycl::access::mode::read>(cgh);
-    auto ref_acc = ref_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto src_acc = src_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto ref_acc = ref_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_src(
-      sycl::range<2>{16, 16}, cgh);
-    sycl::accessor<uint16_t, 2, sycl::access::mode::read_write, sycl::target::device> local_ref(
-      sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_src(
+      ::sycl::range<2>{16, 16}, cgh);
+    ::sycl::accessor<uint16_t, 2, ::sycl::access::mode::read_write, sycl::target::device> local_ref(
+      ::sycl::range<2>{16, 16}, cgh);
 
-    auto kern = [&](sycl::nd_item<2> item) {
+    auto kern = [&](::sycl::nd_item<2> item) {
       const int gid = item.get_group(0) * item.get_group_range(1) + item.get_group(1);
       const int tile_id = item.get_group(2);
       const int lid_x = item.get_local_id(0);
@@ -726,11 +726,11 @@ void sad32x16(sycl::queue& q, const uint16_t* src, int src_stride,
       local_src[lid_y][lid_x] = src_acc[lid_y][tile_x + lid_x];
       local_ref[lid_y][lid_x] = ref_acc[ref_y + dy + lid_y][ref_x + dx + tile_x + lid_x];
 
-      item.barrier(sycl::access::fence_space::local_space);
+      item.barrier(::sycl::access::fence_space::local_space);
 
       uint32_t pixel_sad = sycl::abs(local_src[lid_y][lid_x] - local_ref[lid_y][lid_x]);
       auto group = item.get_group();
-      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, sycl::plus<>());
+      uint32_t tile_sad = sycl::reduce_over_group(group, pixel_sad, ::sycl::plus<>());
 
       if (lid_x == 0 && lid_y == 0) {
         results_acc[gid * 2 + tile_id] = tile_sad;
@@ -754,18 +754,18 @@ void sad32x16(sycl::queue& q, const uint16_t* src, int src_stride,
 // Multi-Candidate SAD
 // ============================================================================
 
-void sad_multi_candidate(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad_multi_candidate(::sycl::queue& q, const uint16_t* src, int src_stride,
                          const uint16_t* ref, int ref_stride,
                          const int2* candidates, int num_candidates,
                          uint32_t* results, int width, int height) {
-  sycl::buffer<int2> cand_buf(candidates, num_candidates);
-  sycl::buffer<uint32_t> results_buf(results, num_candidates);
+  ::sycl::buffer<int2> cand_buf(candidates, num_candidates);
+  ::sycl::buffer<uint32_t> results_buf(results, num_candidates);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto cand_acc = cand_buf.get_access<sycl::access::mode::read>(cgh);
-    auto results_acc = results_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto cand_acc = cand_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto results_acc = results_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    auto kern = [=](sycl::id<1> gid) {
+    auto kern = [=](::sycl::id<1> gid) {
       if (gid >= num_candidates) return;
 
       const int2 offset = cand_acc[gid];
@@ -782,25 +782,25 @@ void sad_multi_candidate(sycl::queue& q, const uint16_t* src, int src_stride,
       results_acc[gid] = sad;
     };
 
-    cgh.parallel_for<class SADMultiCandidate>(sycl::range<1>(num_candidates), kern);
+    cgh.parallel_for<class SADMultiCandidate>(::sycl::range<1>(num_candidates), kern);
   });
 }
 
-void sad_diamond_4way(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad_diamond_4way(::sycl::queue& q, const uint16_t* src, int src_stride,
                       const uint16_t* ref, int ref_stride,
                       int center_x, int center_y, uint32_t* sad_out,
                       int width, int height) {
   // Diamond pattern: (0,-1), (0,1), (-1,0), (1,0)
   const int2 offsets[4] = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
 
-  sycl::buffer<int2> offset_buf(offsets, 4);
-  sycl::buffer<uint32_t> sad_buf(sad_out, 4);
+  ::sycl::buffer<int2> offset_buf(offsets, 4);
+  ::sycl::buffer<uint32_t> sad_buf(sad_out, 4);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto offset_acc = offset_buf.get_access<sycl::access::mode::read>(cgh);
-    auto sad_acc = sad_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto offset_acc = offset_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto sad_acc = sad_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    auto kern = [=](sycl::id<1> gid) {
+    auto kern = [=](::sycl::id<1> gid) {
       const int2 offset = offset_acc[gid];
       const int ref_start_y = center_y + offset.y();
       const int ref_start_x = center_x + offset.x();
@@ -817,11 +817,11 @@ void sad_diamond_4way(sycl::queue& q, const uint16_t* src, int src_stride,
       sad_acc[gid] = sad;
     };
 
-    cgh.parallel_for<class SADDiamond4Way>(sycl::range<1>(4), kern);
+    cgh.parallel_for<class SADDiamond4Way>(::sycl::range<1>(4), kern);
   });
 }
 
-void sad_diamond_8way(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad_diamond_8way(::sycl::queue& q, const uint16_t* src, int src_stride,
                       const uint16_t* ref, int ref_stride,
                       int center_x, int center_y, uint32_t* sad_out,
                       int width, int height) {
@@ -829,14 +829,14 @@ void sad_diamond_8way(sycl::queue& q, const uint16_t* src, int src_stride,
   const int2 offsets[8] = {{0, -1}, {0, 1}, {-1, 0}, {1, 0},
                            {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
-  sycl::buffer<int2> offset_buf(offsets, 8);
-  sycl::buffer<uint32_t> sad_buf(sad_out, 8);
+  ::sycl::buffer<int2> offset_buf(offsets, 8);
+  ::sycl::buffer<uint32_t> sad_buf(sad_out, 8);
 
-  q.submit([&](sycl::handler& cgh) {
-    auto offset_acc = offset_buf.get_access<sycl::access::mode::read>(cgh);
-    auto sad_acc = sad_buf.get_access<sycl::access::mode::write>(cgh);
+  q.submit([&](::sycl::handler& cgh) {
+    auto offset_acc = offset_buf.get_access<::sycl::access::mode::read>(cgh);
+    auto sad_acc = sad_buf.get_access<::sycl::access::mode::write>(cgh);
 
-    auto kern = [=](sycl::id<1> gid) {
+    auto kern = [=](::sycl::id<1> gid) {
       const int2 offset = offset_acc[gid];
       const int ref_start_y = center_y + offset.y();
       const int ref_start_x = center_x + offset.x();
@@ -853,7 +853,7 @@ void sad_diamond_8way(sycl::queue& q, const uint16_t* src, int src_stride,
       sad_acc[gid] = sad;
     };
 
-    cgh.parallel_for<class SADDiamond8Way>(sycl::range<1>(8), kern);
+    cgh.parallel_for<class SADDiamond8Way>(::sycl::range<1>(8), kern);
   });
 }
 
@@ -861,7 +861,7 @@ void sad_diamond_8way(sycl::queue& q, const uint16_t* src, int src_stride,
 // Full Search Motion Estimation
 // ============================================================================
 
-MVResult full_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult full_search_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                         const uint16_t* ref, int ref_stride,
                         int ref_x, int ref_y, const MEParams& params) {
   int width, height;
@@ -930,7 +930,7 @@ MVResult full_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
 // Diamond Search Motion Estimation
 // ============================================================================
 
-MVResult diamond_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult diamond_search_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                            const uint16_t* ref, int ref_stride,
                            const MVResult& start_mv, const MEParams& params) {
   int width, height;
@@ -990,7 +990,7 @@ MVResult diamond_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
 // Hierarchical Motion Estimation
 // ============================================================================
 
-MVResult hierarchical_me(sycl::queue& q,
+MVResult hierarchical_me(::sycl::queue& q,
                         const uint16_t* src, int src_stride,
                         const uint16_t* ref, int ref_stride,
                         const uint16_t* src_ds, int src_ds_stride,
@@ -1027,7 +1027,7 @@ MVResult hierarchical_me(sycl::queue& q,
 // Sub-pixel Motion Estimation
 // ============================================================================
 
-MVResult subpel_halfpel_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult subpel_halfpel_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                            const uint16_t* ref, int ref_stride,
                            const MVResult& start_mv, const MEParams& params) {
   int width, height;
@@ -1070,7 +1070,7 @@ MVResult subpel_halfpel_me(sycl::queue& q, const uint16_t* src, int src_stride,
   return result;
 }
 
-MVResult subpel_quarterpel_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult subpel_quarterpel_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                               const uint16_t* ref, int ref_stride,
                               const MVResult& start_mv, const MEParams& params) {
   int width, height;
@@ -1116,7 +1116,7 @@ MVResult subpel_quarterpel_me(sycl::queue& q, const uint16_t* src, int src_strid
 // Batch Motion Estimation
 // ============================================================================
 
-void batch_full_search_me(sycl::queue& q,
+void batch_full_search_me(::sycl::queue& q,
                           const uint16_t* src, int src_stride,
                           const uint16_t* ref, int ref_stride,
                           const int2* block_origins, int num_blocks,

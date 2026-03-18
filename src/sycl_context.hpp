@@ -43,10 +43,10 @@ public:
     bool is_gpu() const { return is_gpu_; }
 
     // Get SYCL queue
-    ::sycl::queue& queue() { return queue_; }
+    ::::sycl::queue& queue() { return queue_; }
 
     // Get current device
-    ::sycl::device get_device() { return device_; }
+    ::::sycl::device get_device() { return device_; }
 
     // Get compute unit count
     size_t compute_units() const { return compute_units_; }
@@ -69,13 +69,13 @@ private:
     SYCLContext& operator=(const SYCLContext&) = delete;
 
     // Score device for selection priority
-    int score_device(const ::sycl::device& dev);
+    int score_device(const ::::sycl::device& dev);
 
     // Select best available device
-    ::sycl::device select_best_device();
+    ::::sycl::device select_best_device();
 
-    ::sycl::device device_;
-    ::sycl::queue queue_;
+    ::::sycl::device device_;
+    ::::sycl::queue queue_;
 
     bool available_ = false;
     bool is_gpu_ = false;

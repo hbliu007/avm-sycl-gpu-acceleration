@@ -57,11 +57,11 @@ struct TxfmParams {
 /// @param output Output coefficient buffer
 /// @param stride Input stride in pixels
 /// @param params Transform parameters
-void fdct4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct4x4(::sycl::queue& q, const int16_t* input, tran_low_t* output,
              int stride, const TxfmParams& params);
 
 /// @brief 2D Forward 8x8 DCT-II
-void fdct8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct8x8(::sycl::queue& q, const int16_t* input, tran_low_t* output,
              int stride, const TxfmParams& params);
 
 /// @brief 2D Forward 16x16 DCT-II
@@ -69,11 +69,11 @@ void fdct16x16(sycl:: queue& q, const int16_t* input, tran_low_t* output,
                int stride, const TxfmParams& params);
 
 /// @brief 2D Forward 32x32 DCT-II
-void fdct32x32(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct32x32(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                int stride, const TxfmParams& params);
 
 /// @brief 2D Forward 64x64 DCT-II
-void fdct64x64(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fdct64x64(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                int stride, const TxfmParams& params);
 
 // ============================================================================
@@ -86,23 +86,23 @@ void fdct64x64(sycl::queue& q, const int16_t* input, tran_low_t* output,
 /// @param output Output reconstructed buffer
 /// @param stride Output stride in pixels
 /// @param params Transform parameters
-void idct4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct4x4(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
              int stride, const TxfmParams& params);
 
 /// @brief 2D Inverse 8x8 DCT
-void idct8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct8x8(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
              int stride, const TxfmParams& params);
 
 /// @brief 2D Inverse 16x16 DCT
-void idct16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct16x16(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                int stride, const TxfmParams& params);
 
 /// @brief 2D Inverse 32x32 DCT
-void idct32x32(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct32x32(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                int stride, const TxfmParams& params);
 
 /// @brief 2D Inverse 64x64 DCT
-void idct64x64(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void idct64x64(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                int stride, const TxfmParams& params);
 
 // ============================================================================
@@ -115,15 +115,15 @@ void idct64x64(sycl::queue& q, const tran_low_t* input, uint16_t* output,
 /// @param output Output coefficient buffer
 /// @param stride Input stride in pixels
 /// @param params Transform parameters
-void fadst4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fadst4x4(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params);
 
 /// @brief 2D Forward 8x8 ADST
-void fadst8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fadst8x8(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params);
 
 /// @brief 2D Forward 16x16 ADST
-void fadst16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fadst16x16(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                 int stride, const TxfmParams& params);
 
 // ============================================================================
@@ -136,15 +136,15 @@ void fadst16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
 /// @param output Output reconstructed buffer
 /// @param stride Output stride in pixels
 /// @param params Transform parameters
-void iadst4x4(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void iadst4x4(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
               int stride, const TxfmParams& params);
 
 /// @brief 2D Inverse 8x8 ADST
-void iadst8x8(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void iadst8x8(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
               int stride, const TxfmParams& params);
 
 /// @brief 2D Inverse 16x16 ADST
-void iadst16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void iadst16x16(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                 int stride, const TxfmParams& params);
 
 // ============================================================================
@@ -157,15 +157,15 @@ void iadst16x16(sycl::queue& q, const tran_low_t* input, uint16_t* output,
 /// @param output Output buffer
 /// @param stride Stride in pixels
 /// @param params Transform parameters
-void fidtx4x4(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fidtx4x4(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params);
 
 /// @brief 2D Forward/Inverse 8x8 Identity Transform
-void fidtx8x8(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fidtx8x8(::sycl::queue& q, const int16_t* input, tran_low_t* output,
               int stride, const TxfmParams& params);
 
 /// @brief 2D Forward/Inverse 16x16 Identity Transform
-void fidtx16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void fidtx16x16(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                 int stride, const TxfmParams& params);
 
 // ============================================================================
@@ -178,7 +178,7 @@ void fidtx16x16(sycl::queue& q, const int16_t* input, tran_low_t* output,
 /// @param output Output coefficient buffer
 /// @param stride Input stride in pixels
 /// @param params Transform parameters with row_type and col_type
-void hybrid_fwd_txfm(sycl::queue& q, const int16_t* input, tran_low_t* output,
+void hybrid_fwd_txfm(::sycl::queue& q, const int16_t* input, tran_low_t* output,
                      int stride, const TxfmParams& params, TxfmType row_type,
                      TxfmType col_type);
 
@@ -188,7 +188,7 @@ void hybrid_fwd_txfm(sycl::queue& q, const int16_t* input, tran_low_t* output,
 /// @param output Output reconstructed buffer
 /// @param stride Output stride in pixels
 /// @param params Transform parameters with row_type and col_type
-void hybrid_inv_txfm(sycl::queue& q, const tran_low_t* input, uint16_t* output,
+void hybrid_inv_txfm(::sycl::queue& q, const tran_low_t* input, uint16_t* output,
                      int stride, const TxfmParams& params, TxfmType row_type,
                      TxfmType col_type);
 

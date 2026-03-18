@@ -32,7 +32,7 @@ public:
         max_pos(max_pos_val), q_thresh(q_thresh_val),
         side_thresh(side_thresh_val), t(t_ptr), result(result_ptr) {}
 
-  void operator()(sycl::item<1> item) const {
+  void operator()(::sycl::item<1> item) const {
     // This kernel determines how many pixels to modify on each side
     // Based on second derivative analysis similar to filt_choice_highbd
 
@@ -189,7 +189,7 @@ public:
         width_neg(width_neg_val), width_pos(width_pos_val), bd(bd_val),
         is_lossless_neg(is_lossless_neg_val), is_lossless_pos(is_lossless_pos_val) {}
 
-  void operator()(sycl::item<1> item) const {
+  void operator()(::sycl::item<1> item) const {
     if (width_neg < 1 || width_pos < 1) return;
 
     int width = std::max(width_neg, width_pos);
@@ -240,7 +240,7 @@ public:
         is_lossless_neg(is_lossless_neg_val), is_lossless_pos(is_lossless_pos_val),
         count(count_val) {}
 
-  void operator()(sycl::item<1> item) const {
+  void operator()(::sycl::item<1> item) const {
     int i = item.get_id(0);
     if (i >= count) return;
 
@@ -300,7 +300,7 @@ public:
         is_lossless_neg(is_lossless_neg_val), is_lossless_pos(is_lossless_pos_val),
         count(count_val) {}
 
-  void operator()(sycl::item<1> item) const {
+  void operator()(::sycl::item<1> item) const {
     int i = item.get_id(0);
     if (i >= count) return;
 
@@ -352,7 +352,7 @@ private:
 // Horizontal Loop Filter Implementations
 // ============================================================================
 
-void lpf_horizontal_4(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_4(::sycl::queue& q, uint16_t* s, int pitch,
                       const LpfParams& params, int count) {
   int filt_neg = (params.filt_width_neg >> 1) - 1;
 
@@ -363,7 +363,7 @@ void lpf_horizontal_4(sycl::queue& q, uint16_t* s, int pitch,
   int* filter_result = sycl::malloc_shared<int>(1, q);
 
   // Submit filter choice kernel
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s_dev, pitch, params.filt_width_neg, params.filt_width_pos,
         params.q_thresh, params.side_thresh,
@@ -371,25 +371,25 @@ void lpf_horizontal_4(sycl::queue& q, uint16_t* s, int pitch,
   }).wait();
 
   int filter = *filter_result;
-  sycl::free(filter_result, q);
+  ::sycl::free(filter_result, q);
 
   // Apply filter to each pixel in the edge
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<1>(count),
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<1>(count),
         HorizontalFilterKernel(
             s_dev, pitch, filter, filt_neg, params.q_thresh,
             params.bd, params.is_lossless_neg, params.is_lossless_pos, count));
   }).wait();
 }
 
-void lpf_horizontal_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_8(::sycl::queue& q, uint16_t* s, int pitch,
                       const LpfParams& params, int count) {
   int filt_neg = (params.filt_width_neg >> 1) - 1;
 
   uint16_t* s_dev = s;
   int* filter_result = sycl::malloc_shared<int>(1, q);
 
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s_dev, pitch, params.filt_width_neg, params.filt_width_pos,
         params.q_thresh, params.side_thresh,
@@ -397,24 +397,24 @@ void lpf_horizontal_8(sycl::queue& q, uint16_t* s, int pitch,
   }).wait();
 
   int filter = *filter_result;
-  sycl::free(filter_result, q);
+  ::sycl::free(filter_result, q);
 
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<1>(count),
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<1>(count),
         HorizontalFilterKernel(
             s_dev, pitch, filter, filt_neg, params.q_thresh,
             params.bd, params.is_lossless_neg, params.is_lossless_pos, count));
   }).wait();
 }
 
-void lpf_horizontal_14(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_14(::sycl::queue& q, uint16_t* s, int pitch,
                        const LpfParams& params, int count) {
   int filt_neg = (params.filt_width_neg >> 1) - 1;
 
   uint16_t* s_dev = s;
   int* filter_result = sycl::malloc_shared<int>(1, q);
 
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s_dev, pitch, params.filt_width_neg, params.filt_width_pos,
         params.q_thresh, params.side_thresh,
@@ -422,10 +422,10 @@ void lpf_horizontal_14(sycl::queue& q, uint16_t* s, int pitch,
   }).wait();
 
   int filter = *filter_result;
-  sycl::free(filter_result, q);
+  ::sycl::free(filter_result, q);
 
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<1>(count),
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<1>(count),
         HorizontalFilterKernel(
             s_dev, pitch, filter, filt_neg, params.q_thresh,
             params.bd, params.is_lossless_neg, params.is_lossless_pos, count));
@@ -436,7 +436,7 @@ void lpf_horizontal_14(sycl::queue& q, uint16_t* s, int pitch,
 // Vertical Loop Filter Implementations
 // ============================================================================
 
-void lpf_vertical_4(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_4(::sycl::queue& q, uint16_t* s, int pitch,
                     const LpfParams& params, int count) {
   int filt_neg = (params.filt_width_neg >> 1) - 1;
 
@@ -444,7 +444,7 @@ void lpf_vertical_4(sycl::queue& q, uint16_t* s, int pitch,
   int* filter_result = sycl::malloc_shared<int>(1, q);
 
   // For vertical filter, pitch = 1 (column stride)
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s_dev, 1, params.filt_width_neg, params.filt_width_pos,
         params.q_thresh, params.side_thresh,
@@ -452,24 +452,24 @@ void lpf_vertical_4(sycl::queue& q, uint16_t* s, int pitch,
   }).wait();
 
   int filter = *filter_result;
-  sycl::free(filter_result, q);
+  ::sycl::free(filter_result, q);
 
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<1>(count),
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<1>(count),
         VerticalFilterKernel(
             s_dev, pitch, filter, filt_neg, params.q_thresh,
             params.bd, params.is_lossless_neg, params.is_lossless_pos, count));
   }).wait();
 }
 
-void lpf_vertical_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_8(::sycl::queue& q, uint16_t* s, int pitch,
                     const LpfParams& params, int count) {
   int filt_neg = (params.filt_width_neg >> 1) - 1;
 
   uint16_t* s_dev = s;
   int* filter_result = sycl::malloc_shared<int>(1, q);
 
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s_dev, 1, params.filt_width_neg, params.filt_width_pos,
         params.q_thresh, params.side_thresh,
@@ -477,24 +477,24 @@ void lpf_vertical_8(sycl::queue& q, uint16_t* s, int pitch,
   }).wait();
 
   int filter = *filter_result;
-  sycl::free(filter_result, q);
+  ::sycl::free(filter_result, q);
 
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<1>(count),
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<1>(count),
         VerticalFilterKernel(
             s_dev, pitch, filter, filt_neg, params.q_thresh,
             params.bd, params.is_lossless_neg, params.is_lossless_pos, count));
   }).wait();
 }
 
-void lpf_vertical_14(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_14(::sycl::queue& q, uint16_t* s, int pitch,
                      const LpfParams& params, int count) {
   int filt_neg = (params.filt_width_neg >> 1) - 1;
 
   uint16_t* s_dev = s;
   int* filter_result = sycl::malloc_shared<int>(1, q);
 
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s_dev, 1, params.filt_width_neg, params.filt_width_pos,
         params.q_thresh, params.side_thresh,
@@ -502,10 +502,10 @@ void lpf_vertical_14(sycl::queue& q, uint16_t* s, int pitch,
   }).wait();
 
   int filter = *filter_result;
-  sycl::free(filter_result, q);
+  ::sycl::free(filter_result, q);
 
-  q.submit([&](sycl::handler& cgh) {
-    cgh.parallel_for(sycl::range<1>(count),
+  q.submit([&](::sycl::handler& cgh) {
+    cgh.parallel_for(::sycl::range<1>(count),
         VerticalFilterKernel(
             s_dev, pitch, filter, filt_neg, params.q_thresh,
             params.bd, params.is_lossless_neg, params.is_lossless_pos, count));
@@ -516,7 +516,7 @@ void lpf_vertical_14(sycl::queue& q, uint16_t* s, int pitch,
 // Dual Filter Variants
 // ============================================================================
 
-void lpf_dual(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_dual(::sycl::queue& q, uint16_t* s, int pitch,
               const LpfParams& params_h, const LpfParams& params_v) {
   // Apply horizontal filter first
   lpf_horizontal_4(q, s, pitch, params_h, 4);
@@ -525,7 +525,7 @@ void lpf_dual(sycl::queue& q, uint16_t* s, int pitch,
   lpf_vertical_4(q, s, pitch, params_v, 4);
 }
 
-void lpf_horizontal_edge_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_horizontal_edge_8(::sycl::queue& q, uint16_t* s, int pitch,
                            const LpfParams& params, int width, int height) {
   for (int row = 0; row < height; row++) {
     uint16_t* edge = s + row * pitch;
@@ -533,7 +533,7 @@ void lpf_horizontal_edge_8(sycl::queue& q, uint16_t* s, int pitch,
   }
 }
 
-void lpf_vertical_edge_8(sycl::queue& q, uint16_t* s, int pitch,
+void lpf_vertical_edge_8(::sycl::queue& q, uint16_t* s, int pitch,
                          const LpfParams& params, int width, int height) {
   for (int col = 0; col < width; col++) {
     uint16_t* edge = s + col;
@@ -545,19 +545,19 @@ void lpf_vertical_edge_8(sycl::queue& q, uint16_t* s, int pitch,
 // Filter Selection Function
 // ============================================================================
 
-int filt_choice(sycl::queue& q, uint16_t* s, int pitch,
+int filt_choice(::sycl::queue& q, uint16_t* s, int pitch,
                 int max_filt_neg, int max_filt_pos,
                 uint16_t q_thresh, uint16_t side_thresh, uint16_t* t) {
   int* result = sycl::malloc_shared<int>(1, q);
 
-  q.submit([&](sycl::handler& cgh) {
+  q.submit([&](::sycl::handler& cgh) {
     cgh.single_task(FilterChoiceKernel(
         s, pitch, max_filt_neg, max_filt_pos,
         q_thresh, side_thresh, t, result));
   }).wait();
 
   int filter_width = *result;
-  sycl::free(result, q);
+  ::sycl::free(result, q);
 
   return filter_width;
 }
@@ -566,7 +566,7 @@ int filt_choice(sycl::queue& q, uint16_t* s, int pitch,
 // Batch Processing Functions
 // ============================================================================
 
-void batch_lpf_horizontal(sycl::queue& q, uint16_t** edges, int pitch,
+void batch_lpf_horizontal(::sycl::queue& q, uint16_t** edges, int pitch,
                           const LpfParams* params, int num_edges, int width) {
   for (int i = 0; i < num_edges; i++) {
     switch (width) {
@@ -585,7 +585,7 @@ void batch_lpf_horizontal(sycl::queue& q, uint16_t** edges, int pitch,
   }
 }
 
-void batch_lpf_vertical(sycl::queue& q, uint16_t** edges, int pitch,
+void batch_lpf_vertical(::sycl::queue& q, uint16_t** edges, int pitch,
                         const LpfParams* params, int num_edges, int width) {
   for (int i = 0; i < num_edges; i++) {
     switch (width) {

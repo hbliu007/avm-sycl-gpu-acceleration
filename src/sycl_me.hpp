@@ -62,27 +62,27 @@ struct SADResult {
 /// @param ref_y Starting Y position in reference
 /// @param results Output array of SAD values [search_range * search_range]
 /// @param params Motion estimation parameters
-void sad4x4(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad4x4(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params);
 
 /// @brief Compute 8x8 SAD between source and reference blocks
-void sad8x8(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad8x8(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params);
 
 /// @brief Compute 16x16 SAD between source and reference blocks
-void sad16x16(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad16x16(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params);
 
 /// @brief Compute 32x32 SAD between source and reference blocks
-void sad32x32(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad32x32(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params);
 
 /// @brief Compute 64x64 SAD between source and reference blocks
-void sad64x64(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad64x64(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params);
 
@@ -91,32 +91,32 @@ void sad64x64(sycl::queue& q, const uint16_t* src, int src_stride,
 // ============================================================================
 
 /// @brief Compute 4x8 SAD
-void sad4x8(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad4x8(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params);
 
 /// @brief Compute 8x4 SAD
-void sad8x4(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad8x4(::sycl::queue& q, const uint16_t* src, int src_stride,
             const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
             uint32_t* results, const MEParams& params);
 
 /// @brief Compute 8x16 SAD
-void sad8x16(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad8x16(::sycl::queue& q, const uint16_t* src, int src_stride,
              const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
              uint32_t* results, const MEParams& params);
 
 /// @brief Compute 16x8 SAD
-void sad16x8(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad16x8(::sycl::queue& q, const uint16_t* src, int src_stride,
              const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
              uint32_t* results, const MEParams& params);
 
 /// @brief Compute 16x32 SAD
-void sad16x32(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad16x32(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params);
 
 /// @brief Compute 32x16 SAD
-void sad32x16(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad32x16(::sycl::queue& q, const uint16_t* src, int src_stride,
               const uint16_t* ref, int ref_stride, int ref_x, int ref_y,
               uint32_t* results, const MEParams& params);
 
@@ -135,7 +135,7 @@ void sad32x16(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param results Output SAD values [num_candidates]
 /// @param width Block width
 /// @param height Block height
-void sad_multi_candidate(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad_multi_candidate(::sycl::queue& q, const uint16_t* src, int src_stride,
                          const uint16_t* ref, int ref_stride,
                          const int2* candidates, int num_candidates,
                          uint32_t* results, int width, int height);
@@ -151,7 +151,7 @@ void sad_multi_candidate(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param sad_out Output SAD values [4] for: (0,-1), (0,1), (-1,0), (1,0)
 /// @param width Block width
 /// @param height Block height
-void sad_diamond_4way(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad_diamond_4way(::sycl::queue& q, const uint16_t* src, int src_stride,
                       const uint16_t* ref, int ref_stride,
                       int center_x, int center_y, uint32_t* sad_out,
                       int width, int height);
@@ -167,7 +167,7 @@ void sad_diamond_4way(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param sad_out Output SAD values [8] for surrounding positions
 /// @param width Block width
 /// @param height Block height
-void sad_diamond_8way(sycl::queue& q, const uint16_t* src, int src_stride,
+void sad_diamond_8way(::sycl::queue& q, const uint16_t* src, int src_stride,
                       const uint16_t* ref, int ref_stride,
                       int center_x, int center_y, uint32_t* sad_out,
                       int width, int height);
@@ -186,7 +186,7 @@ void sad_diamond_8way(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param ref_y Reference block origin Y
 /// @param params Motion estimation parameters
 /// @return Best motion vector with minimum SAD
-MVResult full_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult full_search_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                         const uint16_t* ref, int ref_stride,
                         int ref_x, int ref_y, const MEParams& params);
 
@@ -199,7 +199,7 @@ MVResult full_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param start_mv Starting motion vector (1/8 pixel units)
 /// @param params Motion estimation parameters
 /// @return Refined motion vector
-MVResult diamond_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult diamond_search_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                            const uint16_t* ref, int ref_stride,
                            const MVResult& start_mv, const MEParams& params);
 
@@ -219,7 +219,7 @@ MVResult diamond_search_me(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param ref_ds_stride Downsampled reference stride
 /// @param params Motion estimation parameters
 /// @return Best motion vector at full resolution
-MVResult hierarchical_me(sycl::queue& q,
+MVResult hierarchical_me(::sycl::queue& q,
                         const uint16_t* src, int src_stride,
                         const uint16_t* ref, int ref_stride,
                         const uint16_t* src_ds, int src_ds_stride,
@@ -239,7 +239,7 @@ MVResult hierarchical_me(sycl::queue& q,
 /// @param start_mv Integer-pixel MV to refine
 /// @param params Motion estimation parameters
 /// @return Refined motion vector with half-pel precision
-MVResult subpel_halfpel_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult subpel_halfpel_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                            const uint16_t* ref, int ref_stride,
                            const MVResult& start_mv, const MEParams& params);
 
@@ -252,7 +252,7 @@ MVResult subpel_halfpel_me(sycl::queue& q, const uint16_t* src, int src_stride,
 /// @param start_mv Half-pixel MV to refine
 /// @param params Motion estimation parameters
 /// @return Refined motion vector with quarter-pel precision
-MVResult subpel_quarterpel_me(sycl::queue& q, const uint16_t* src, int src_stride,
+MVResult subpel_quarterpel_me(::sycl::queue& q, const uint16_t* src, int src_stride,
                               const uint16_t* ref, int ref_stride,
                               const MVResult& start_mv, const MEParams& params);
 
@@ -270,7 +270,7 @@ MVResult subpel_quarterpel_me(sycl::queue& q, const uint16_t* src, int src_strid
 /// @param num_blocks Number of blocks to process
 /// @param params Motion estimation parameters (same for all blocks)
 /// @param results Output MV results [num_blocks]
-void batch_full_search_me(sycl::queue& q,
+void batch_full_search_me(::sycl::queue& q,
                           const uint16_t* src, int src_stride,
                           const uint16_t* ref, int ref_stride,
                           const int2* block_origins, int num_blocks,
@@ -283,7 +283,7 @@ void batch_full_search_me(sycl::queue& q,
 /// @brief Get SAD function pointer for specific block size
 /// @param bsize Block size
 /// @return Function pointer to SAD kernel
-using SADFunc = void(*)(sycl::queue&, const uint16_t*, int,
+using SADFunc = void(*)(::sycl::queue&, const uint16_t*, int,
                         const uint16_t*, int, int, int,
                         uint32_t*, const MEParams&);
 
