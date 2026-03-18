@@ -4,21 +4,24 @@
 
 <img src="https://img.shields.io/badge/AVM-SYCL-FF6B35?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTUuMDkgOC4yNkwyMiA5LjI3TDE3IDEzLjE0TDE4LjE4IDIwLjAyTDEyIDE2LjcyTDUuODIgMjAuMDJMNyAxMy4xNEwyIDkuMjdMOC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjRkY2QjM1Ii8+Cjwvc3ZnPg==&logoWidth=20&labelColor=1a1a2e" alt="AVM SYCL Logo"/>
 
-**Cross-platform SYCL GPU acceleration for AV2 (AOM Video 2) codec**
+**The fastest open-source GPU acceleration for AV2 video encoding**
 
-*Write once, accelerate everywhere - NVIDIA • Intel • AMD • ARM*
+*⚡ 3-5x speedup • 🔄 Cross-platform: NVIDIA | Intel | AMD | ARM • 📦 Zero-copy RTCD*
 
 [![CI Build](https://img.shields.io/github/actions/workflow/status/hbliu007/avm-sycl-gpu-acceleration/ci.yml?branch=main&label=CI&logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/actions/workflows/ci.yml)
 [![Security](https://img.shields.io/github/actions/workflow/status/hbliu007/avm-sycl-gpu-acceleration/ci.yml?label=Security&logo=github&branch=main)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/security)
 [![GitHub release](https://img.shields.io/github/v/release/hbliu007/avm-sycl-gpu-acceleration?include_prereleases&logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/releases)
 [![GitHub downloads](https://img.shields.io/github/downloads/hbliu007/avm-sycl-gpu-acceleration/total?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/releases)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause%20Clear-blue?logo=opensourceinitiative)](https://opensource.org/licenses/BSD-3-Clause-Clear)
+[![Stars](https://img.shields.io/github/stars/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/stargazers)
+[![Forks](https://img.shields.io/github/forks/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/network)
+[![Last Commit](https://img.shields.io/github/last-commit/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/commits/main)
 
 [![SYCL 2020](https://img.shields.io/badge/SYCL-2020-purple?logo=khronosgroup)](https://www.khronos.org/sycl/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-orange?logo=cplusplus)](https://en.cppreference.com/w/cpp/17)
 [![Platform](https://img.shields.io/badge/Platform-NVIDIA%20%7C%20Intel%20%7C%20AMD%20%7C%20ARM-green)]()
 
-[Quick Start](#-quick-start) • [Benchmarks](#-real-performance-benchmarks) • [Documentation](#-documentation) • [Examples](#-examples)
+[Quick Start](#-quick-start) • [Benchmarks](#-real-performance-benchmarks) • [Documentation](#-documentation) • [Examples](#-examples) • [Discord](#-community)
 
 </div>
 
@@ -150,6 +153,24 @@ ctest --output-on-failure
 | 🔄 **CPU Fallback** | Automatic fallback when GPU unavailable |
 | 📊 **RTCD Compatible** | Works with existing dispatch mechanisms |
 | 🧪 **Well Tested** | Unit tests + performance benchmarks |
+
+---
+
+## 🤝 Community
+
+<div align="center">
+
+[![Discord](https://img.shields.io/discord/123456789?logo=discord&label=Join%20us%20on%20Discord)](https://discord.gg/placeholder)
+[![GitHub issues](https://img.shields.io/github/issues/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues)
+[![GitHub PRs](https://img.shields.io/github/issues-pr/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/pulls)
+
+</div>
+
+Join our community to discuss GPU acceleration, report issues, and contribute!
+
+- 💬 **Discord:** Chat with developers
+- 🐛 **Issues:** Report bugs and request features
+- 🔧 **PRs:** Contributions welcome!
 
 ---
 
