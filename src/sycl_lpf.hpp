@@ -14,7 +14,7 @@
 #define AVM_AVM_DSP_SYCL_SYCL_LPF_HPP_
 
 #include <sycl/sycl.hpp>
-#include "avm_dsp/avm_dsp_common.h"
+#include "avm_dsp_common.h"
 #include "avm_dsp/loopfilter.h"
 
 namespace avm {

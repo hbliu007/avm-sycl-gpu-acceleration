@@ -14,7 +14,7 @@
 
 #include "sycl_txfm.hpp"
 #include "sycl_context.hpp"
-#include "avm_dsp/avm_dsp_common.h"
+#include "avm_dsp_common.h"
 
 #include <sycl/sycl.hpp>
 #include <cmath>
