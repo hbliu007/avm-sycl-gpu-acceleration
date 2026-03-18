@@ -234,7 +234,7 @@ avm-sycl-gpu-acceleration/
 
 ```bash
 # 快速贡献设置
-git clone https://github.com/YOUR_USERNAME/avm-sycl-gpu-acceleration.git
+git clone https://github.com/hbliu007/avm-sycl-gpu-acceleration.git
 cd avm-sycl-gpu-acceleration
 git checkout -b feature/my-feature
 # ... 进行修改 ...

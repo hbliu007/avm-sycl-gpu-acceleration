@@ -15,7 +15,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR_USERNAME/avm-sycl-gpu-acceleration.git
+git clone https://github.com/hbliu007/avm-sycl-gpu-acceleration.git
 cd avm-sycl-gpu-acceleration
 
 # Create feature branch

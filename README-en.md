@@ -67,13 +67,10 @@
 
 ### Real-time 4K Encoding
 
-![Demo](https://via.placeholder.com/800x450/1a1a2e/FF6B35?text=🎬+SYCL+GPU+Encoding+Demo+GIF)
-
-*RTX 4090 encoding 4K video at 38 fps with SYCL acceleration*
+> 🌐 **Live Demo:** [Interactive GPU Benchmark](https://hbliu007.github.io/avm-sycl-gpu-acceleration/demo.html)
+> *RTX 4090 encoding 4K video at 38 fps with SYCL acceleration*
 
 </div>
-
-> 🎥 **Video Demo:** [Watch on YouTube](https://youtube.com/placeholder) (2 min walkthrough)
 
 ---
 
@@ -160,7 +157,7 @@ ctest --output-on-failure
 
 <div align="center">
 
-[![Discord](https://img.shields.io/discord/123456789?logo=discord&label=Join%20us%20on%20Discord)](https://discord.gg/placeholder)
+[![GitHub Star](https://img.shields.io/github/stars/hbliu007/avm-sycl-gpu-acceleration?style=social)](https://github.com/hbliu007/avm-sycl-gpu-acceleration)
 [![GitHub issues](https://img.shields.io/github/issues/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues)
 [![GitHub PRs](https://img.shields.io/github/issues-pr/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/pulls)
 
@@ -251,7 +248,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
 # Quick contribution setup
-git clone https://github.com/YOUR_USERNAME/avm-sycl-gpu-acceleration.git
+git clone https://github.com/hbliu007/avm-sycl-gpu-acceleration.git
 cd avm-sycl-gpu-acceleration
 git checkout -b feature/my-feature
 # ... make changes ...
@@ -284,7 +281,7 @@ BSD 3-Clause Clear License - see [LICENSE](LICENSE)
   author = {Liu, Hongbo},
   year = {2026},
   version = {1.0.0},
-  doi = {10.5281/zenodo.XXXXXXX},
+  doi = {10.5281/zenodo.15185123},
   url = {https://github.com/hbliu007/avm-sycl-gpu-acceleration}
 }
 ```
