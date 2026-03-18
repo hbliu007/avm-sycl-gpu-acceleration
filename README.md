@@ -23,6 +23,8 @@
 
 [Quick Start](#-quick-start) • [Benchmarks](#-real-performance-benchmarks) • [Documentation](#-documentation) • [Examples](#-examples) • [Discord](#-community)
 
+[中文](./README-zh.md) • English
+
 </div>
 
 ---
