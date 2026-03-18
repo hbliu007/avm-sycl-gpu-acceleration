@@ -1,10 +1,8 @@
 <div align="center">
 
-# 🎬 AVM SYCL GPU Acceleration
+![AVM SYCL Logo](.github/logo.svg)
 
-<img src="https://img.shields.io/badge/AVM-SYCL-FF6B35?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTUuMDkgOC4yNkwyMiA5LjI3TDE3IDEzLjE0TDE4LjE4IDIwLjAyTDEyIDE2LjcyTDUuODIgMjAuMDJMNyAxMy4xNEwyIDkuMjdMOC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjRkY2QjM1Ii8+Cjwvc3ZnPg==&logoWidth=20&labelColor=1a1a2e" alt="AVM SYCL Logo"/>
-
-**The fastest open-source GPU acceleration for AV2 video encoding**
+### The Fastest Open-Source GPU Acceleration for AV2 Video Encoding
 
 *⚡ 3-5x speedup • 🔄 Cross-platform: NVIDIA | Intel | AMD | ARM • 📦 Zero-copy RTCD*
 

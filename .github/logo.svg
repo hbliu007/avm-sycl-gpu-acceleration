@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C5A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="200" height="200" fill="#1a1a2e" rx="20"/>
+
+  <!-- GPU/Chip icon -->
+  <rect x="40" y="60" width="120" height="80" rx="10" fill="url(#grad)"/>
+
+  <!-- Chip pins left -->
+  <rect x="30" y="70" width="10" height="8" fill="#FF6B35"/>
+  <rect x="30" y="85" width="10" height="8" fill="#FF6B35"/>
+  <rect x="30" y="100" width="10" height="8" fill="#FF6B35"/>
+  <rect x="30" y="115" width="10" height="8" fill="#FF6B35"/>
+
+  <!-- Chip pins right -->
+  <rect x="160" y="70" width="10" height="8" fill="#FF6B35"/>
+  <rect x="160" y="85" width="10" height="8" fill="#FF6B35"/>
+  <rect x="160" y="100" width="10" height="8" fill="#FF6B35"/>
+  <rect x="160" y="115" width="10" height="8" fill="#FF6B35"/>
+
+  <!-- Play symbol -->
+  <polygon points="85,80 85,120 120,100" fill="white"/>
+
+  <!-- SYCL text -->
+  <text x="100" y="170" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FF6B35" text-anchor="middle">SYCL</text>
+</svg>
