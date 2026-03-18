@@ -9,7 +9,7 @@
  * source code in the PATENTS file, you can obtain it at aomedia.org/license/patent-license/.
  */
 
-#include "avm_dsp/sycl/sycl_me.hpp"
+#include "sycl_me.hpp"
 #include <algorithm>
 #include <cassert>
 

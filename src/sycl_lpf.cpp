@@ -10,7 +10,7 @@
  * aomedia.org/license/patent-license/.
  */
 
-#include "avm_dsp/sycl/sycl_lpf.hpp"
+#include "sycl_lpf.hpp"
 #include <algorithm>
 
 namespace avm {

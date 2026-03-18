@@ -12,8 +12,8 @@
 
 #ifdef HAVE_SYCL
 
-#include "avm_dsp/sycl/sycl_txfm.hpp"
-#include "avm_dsp/sycl/sycl_context.hpp"
+#include "sycl_txfm.hpp"
+#include "sycl_context.hpp"
 #include "avm_dsp/avm_dsp_common.h"
 
 #include <sycl/sycl.hpp>

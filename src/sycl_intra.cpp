@@ -10,12 +10,12 @@
  * aomedia.org/license/patent-license/.
  */
 
-#include "avm_dsp/sycl/sycl_intra.hpp"
+#include "sycl_intra.hpp"
 
 #ifdef HAVE_SYCL
 
 #include <sycl/sycl.hpp>
-#include "avm_dsp/sycl/sycl_context.hpp"
+#include "sycl_context.hpp"
 
 namespace avm {
 namespace sycl {
