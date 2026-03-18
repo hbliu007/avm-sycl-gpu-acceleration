@@ -113,7 +113,7 @@ AV2 (AOM Video 2) is the next-generation video codec, but the official AOM encod
 
 ### Introduction
 
-Video encoding is computationally intensive. AV2 promises better compression efficiency than AV1, but encoding times remain prohibitively long. We present AVM SYCL, an open-source GPU acceleration framework for AV2 encoders.
+Video encoding is computationally intensive. AV2 promises better compression efficiency than AV1, but encoding times remain prohibitely long. We present AVM SYCL, an open-source GPU acceleration framework for AV2 encoders.
 
 ### Results
 
@@ -131,3 +131,71 @@ Test: RTX 4090, 1080p@60fps
 AVM SYCL demonstrates significant performance improvements for AV2 encoding. The project is open-source under BSD license and welcomes contributions.
 
 **GitHub**: https://github.com/hbliu007/avm-sycl-gpu-acceleration
+
+---
+
+# 📈 调研结果：类似高星项目的推广策略
+
+## 1. rav1e (4.1k Stars) - 最佳案例
+
+**Slogan**: "The fastest and safest AV1 encoder"
+
+**关键策略：**
+- ✅ 简洁有力的 Slogan
+- ✅ 明确的功能列表 (11 个 speed settings 等)
+- ✅ 每周发布 pre-release (周二)
+- ✅ IRC 社区 (#daala on Libera.Chat)
+- ✅ Actions Status / CodeCov 徽章
+- ✅ hacktoberfest 参与
+
+## 2. NotEnoughAV1Encodes-Qt (32 Stars)
+
+**关键策略：**
+- ✅ 提供预编译二进制
+- ✅ 详细的安装文档
+- ✅ 功能开发进度清单
+- ✅ 捐赠链接 (PayPal, Monero)
+- ✅ Wiki 文档
+
+---
+
+## 🎯 你的项目可以借鉴的策略
+
+### 必须做 (Must Have)
+1. **完善 Slogan** - "首个开源 AV2 GPU 加速方案"
+2. **添加 CI/CD 徽章** - GitHub Actions
+3. **发布 Release** - 提供预编译二进制
+4. **持续更新** - 保持活跃度
+
+### 建议做 (Should Have)
+1. **每周发布** - 即使是小更新
+2. **Discord/QQ群** - 建立社区
+3. **Hacktoberfest** - 吸引贡献者
+4. **技术博客** - 英文 + 中文
+
+### 可选做 (Nice to Have)
+1. 捐赠链接
+2. 功能开发进度看板
+3. Logo 设计
+
+---
+
+## 🔥 快速执行清单
+
+### 今天可做
+- [x] 完善 GitHub Topics ✅
+- [x] 部署 Demo 页面 ⏳ (等待配置 GitHub Pages)
+- [x] 推送推广文案到仓库 ✅
+- [ ] 在 Reddit r/programming 发帖
+- [ ] 在 Twitter 发推
+
+### 本周可做
+- [ ] 发布第一个 Release
+- [ ] 写知乎/掘金技术文章
+- [ ] 制作演示视频
+- [ ] 提交到 awesome-sycl 列表
+
+### 持续做
+- [ ] 每周更新开发进展
+- [ ] 回复所有 Issue
+- [ ] 参与 SYCL/AOM 社区讨论
