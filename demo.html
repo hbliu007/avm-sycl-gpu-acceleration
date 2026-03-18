@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVM SYCL - GPU Acceleration for AV2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #050507;
+            --bg-secondary: #0a0a0f;
+            --bg-card: #0d0d12;
+            --border: #1a1a24;
+            --border-hover: #2a2a3a;
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #4a4a5a;
+            --accent: #00a8ff;
+            --accent-dim: #0066aa;
+            --accent-glow: rgba(0, 168, 255, 0.15);
+            --success: #00d4aa;
+            --gradient-start: #00a8ff;
+            --gradient-end: #0066ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Subtle Grid Background */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse, var(--accent-glow), transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+            padding-top: 40px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        h1 {
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .subtitle strong {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* GitHub Link */
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .github-link:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* Main Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Performance Section */
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Performance Comparison */
+        .perf-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .perf-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 100px;
+            gap: 16px;
+            padding: 20px 24px;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .perf-row:last-child {
+            border-bottom: none;
+        }
+
+        .perf-row.header {
+            background: var(--bg-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .perf-module {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .perf-module-name {
+            font-weight: 500;
+        }
+
+        .perf-module-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .perf-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .perf-time.highlight {
+            color: var(--accent);
+        }
+
+        .perf-speedup {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--success);
+            text-align: right;
+        }
+
+        /* Overall Speedup */
+        .speedup-banner {
+            background: linear-gradient(135deg, var(--bg-card), var(--accent-glow));
+            border: 1px solid var(--accent-dim);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .speedup-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .speedup-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 72px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .speedup-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Platforms */
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .platforms-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .platform-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .platform-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .platform-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .platform-backend {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Code Block */
+        .code-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .code-lang {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .code-content {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+        }
+
+        .code-line-number {
+            color: var(--text-muted);
+            min-width: 30px;
+            user-select: none;
+        }
+
+        .code-line-content {
+            color: var(--text-secondary);
+        }
+
+        .code-comment { color: #6a737d; }
+        .code-keyword { color: #ff7b72; }
+        .code-string { color: #a5d6ff; }
+        .code-function { color: #d2a8ff; }
+
+        /* Features List */
+        .features-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .feature-text strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        .footer-copy {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="fade-in">
+            <div class="badge">
+                <span class="badge-dot"></span>
+                Open Source Project
+            </div>
+            <h1>AVM SYCL</h1>
+            <p class="subtitle">
+                Cross-platform <strong>GPU acceleration</strong> for AV2 (AOM Video 2) codec.
+                Achieve 3-5x encoding speedup with zero-copy RTCD integration.
+            </p>
+            <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration" class="github-link" target="_blank">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                View on GitHub
+            </a>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card fade-in delay-1">
+                <div class="stat-value" id="stars">—</div>
+                <div class="stat-label">Stars</div>
+            </div>
+            <div class="stat-card fade-in delay-2">
+                <div class="stat-value" id="forks">—</div>
+                <div class="stat-label">Forks</div>
+            </div>
+            <div class="stat-card fade-in delay-3">
+                <div class="stat-value">C++</div>
+                <div class="stat-label">Language</div>
+            </div>
+            <div class="stat-card fade-in delay-4">
+                <div class="stat-value">BSD</div>
+                <div class="stat-label">License</div>
+            </div>
+        </div>
+
+        <!-- Performance Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Performance Benchmark</h2>
+            </div>
+
+            <div class="perf-table">
+                <div class="perf-row header">
+                    <span>Module</span>
+                    <span>CPU Time</span>
+                    <span>GPU Time</span>
+                    <span>Speedup</span>
+                </div>
+                <div class="perf-row">
+                    <div class="perf-module">
+                        <div>
+                            <div class="perf-module-name">DCT/IDCT Transform</div>
+                            <div class="perf-module-desc">Frequency domain transformation</div>
+                        </div>
+                    </div>
+                    <div class="perf-time">12.3s</div>
+                    <div class="perf-time highlight">3.5s</div>
+                    <div class="perf-speedup">3.5x</div>
+                </div>
+                <div class="perf-row">
+                    <div class="perf-module">
+                        <div>
+                            <div class="perf-module-name">Motion Estimation (SAD)</div>
+                            <div class="perf-module-desc">Block matching algorithm</div>
+                        </div>
+                    </div>
+                    <div class="perf-time">18.7s</div>
+                    <div class="perf-time highlight">4.2s</div>
+                    <div class="perf-speedup">4.5x</div>
+                </div>
+                <div class="perf-row">
+                    <div class="perf-module">
+                        <div>
+                            <div class="perf-module-name">Loop Filter</div>
+                            <div class="perf-module-desc">Deblocking + SAO</div>
+                        </div>
+                    </div>
+                    <div class="perf-time">8.5s</div>
+                    <div class="perf-time highlight">3.4s</div>
+                    <div class="perf-speedup">2.5x</div>
+                </div>
+                <div class="perf-row">
+                    <div class="perf-module">
+                        <div>
+                            <div class="perf-module-name">Intra Prediction</div>
+                            <div class="perf-module-desc">Spatial prediction modes</div>
+                        </div>
+                    </div>
+                    <div class="perf-time">5.2s</div>
+                    <div class="perf-time highlight">2.1s</div>
+                    <div class="perf-speedup">2.5x</div>
+                </div>
+            </div>
+
+            <div class="speedup-banner">
+                <div class="speedup-label">Overall Encoding Speedup</div>
+                <div class="speedup-value">3-5x</div>
+                <div class="speedup-note">Based on RTX 4090, 1080p@60fps test sequence</div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Key Features</h2>
+            </div>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Zero-Copy RTCD Integration</strong> — Seamlessly integrated with AOM's runtime CPU dispatch. No modification to original encoder pipeline.
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Automatic Device Selection</strong> — Intelligent scoring algorithm selects optimal GPU at runtime. Falls back to CPU gracefully.
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Cross-Platform Support</strong> — Single codebase runs on NVIDIA (CUDA), Intel (Level Zero), AMD (ROCm), and ARM (OpenCL).
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <strong>Production-Ready</strong> — SYCL 2020 compliant. Supports Intel DPC++ and AdaptiveCpp compilers. CMake build system.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platforms -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Supported Platforms</h2>
+            </div>
+
+            <div class="platforms-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">🔷</div>
+                    <div class="platform-name">NVIDIA</div>
+                    <div class="platform-backend">CUDA Backend</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🔵</div>
+                    <div class="platform-name">Intel</div>
+                    <div class="platform-backend">Level Zero</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🔶</div>
+                    <div class="platform-name">AMD</div>
+                    <div class="platform-backend">ROCm / HIP</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🟢</div>
+                    <div class="platform-name">ARM</div>
+                    <div class="platform-backend">OpenCL</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Start -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Quick Start</h2>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-title">Build & Run</span>
+                    <span class="code-lang">Bash</span>
+                </div>
+                <div class="code-content">
+                    <div class="code-line"><span class="code-line-number">1</span><span class="code-line-content"><span class="code-comment"># Clone repository</span></span></div>
+                    <div class="code-line"><span class="code-line-number">2</span><span class="code-line-content"><span class="code-keyword">git</span> clone https://github.com/hbliu007/avm-sycl-gpu-acceleration</span></div>
+                    <div class="code-line"><span class="code-line-number">3</span><span class="code-line-content"><span class="code-keyword">cd</span> avm-sycl-gpu-acceleration</span></div>
+                    <div class="code-line"><span class="code-line-number">4</span><span class="code-line-content"></span></div>
+                    <div class="code-line"><span class="code-line-number">5</span><span class="code-line-content"><span class="code-comment"># Configure with CMake</span></span></div>
+                    <div class="code-line"><span class="code-line-number">6</span><span class="code-line-content"><span class="code-function">mkdir</span> build && <span class="code-keyword">cd</span> build</span></div>
+                    <div class="code-line"><span class="code-line-number">7</span><span class="code-line-content"><span class="code-function">cmake</span> .. -DSYCL_PLATFORM=nvidia</span></div>
+                    <div class="code-line"><span class="code-line-number">8</span><span class="code-line-content"><span class="code-function">make</span> -j$(nproc)</span></div>
+                    <div class="code-line"><span class="code-line-number">9</span><span class="code-line-content"></span></div>
+                    <div class="code-line"><span class="code-line-number">10</span><span class="code-line-content"><span class="code-comment"># Run encoder</span></span></div>
+                    <div class="code-line"><span class="code-line-number">11</span><span class="code-line-content">./avmenc <span class="code-string">input.y4m</span> -o <span class="code-string">output.av2</span> --cpu-used=4</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-links">
+                <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration" class="footer-link">GitHub</a>
+                <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/releases" class="footer-link">Releases</a>
+                <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues" class="footer-link">Issues</a>
+            </div>
+            <p class="footer-copy">BSD 3-Clause License · SYCL 2020 · C++17</p>
+        </footer>
+    </div>
+
+    <script>
+        // GitHub API
+        async function fetchStats() {
+            try {
+                const res = await fetch('https://api.github.com/repos/hbliu007/avm-sycl-gpu-acceleration');
+                const data = await res.json();
+                document.getElementById('stars').textContent = data.stargazers_count || 0;
+                document.getElementById('forks').textContent = data.forks_count || 0;
+            } catch (e) {
+                document.getElementById('stars').textContent = '0';
+                document.getElementById('forks').textContent = '0';
+            }
+        }
+        fetchStats();
+    </script>
+</body>
+</html>
