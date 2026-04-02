@@ -8,20 +8,20 @@ This document summarizes the integration of SYCL GPU acceleration into the AV2 v
 
 ### 1. CMake Build System
 
-#### `/Users/liuhongbo/work/AOM/avm_sycl/av2/av2.cmake`
+#### `av2/av2.cmake`
 - Added SYCL source files to `AVM_AV2_COMMON_SOURCES`:
   - `av2/common/av2_inv_txfm_sycl.c` - Inverse transform SYCL wrappers
 - Added SYCL source files to `AVM_AV2_ENCODER_SOURCES`:
   - `av2/encoder/av2_fwd_txfm_sycl.c` - Forward transform SYCL wrappers
 - Added SYCL-specific compiler flags and library linking in `setup_av2_targets()`
 
-#### `/Users/liuhongbo/work/AOM/avm_sycl/avm_dsp/avm_dsp.cmake`
+#### `avm_dsp/avm_dsp.cmake`
 - Added SYCL subdirectory inclusion and library linking in `setup_avm_dsp_targets()`
 - Links `avm_sycl` library to main `avm` target when `HAVE_SYCL` is enabled
 
 ### 2. RTCD Configuration
 
-#### `/Users/liuhongbo/work/AOM/avm_sycl/av2/common/av2_rtcd_defs.pl`
+#### `av2/common/av2_rtcd_defs.pl`
 - Added `sycl` specialization to transform functions:
   - `inv_stxfm`: Added SYCL specialization
   - `av2_highbd_inv_txfm_add`: Added SYCL specialization
@@ -30,7 +30,7 @@ This document summarizes the integration of SYCL GPU acceleration into the AV2 v
 
 ### 3. SYCL Source Files
 
-#### Core SYCL Implementation (`/Users/liuhongbo/work/AOM/avm_sycl/avm_dsp/sycl/`)
+#### Core SYCL Implementation (`avm_dsp/sycl/`)
 - `sycl_context.cpp/hpp` - SYCL context and device management
 - `sycl_txfm.cpp/hpp` - Transform kernels (DCT, ADST, IDTX)
 - `sycl_txfm_optimized.cpp` - Optimized transform kernels
@@ -41,12 +41,12 @@ This document summarizes the integration of SYCL GPU acceleration into the AV2 v
 - `sycl_wrapper.cpp/hpp` - C wrapper functions for SYCL
 
 #### AV2 Integration Files
-- `/Users/liuhongbo/work/AOM/avm_sycl/av2/common/av2_inv_txfm_sycl.c`
+- `av2/common/av2_inv_txfm_sycl.c`
   - C wrapper functions for inverse transforms
   - Handles GPU memory allocation and data transfer
   - Falls back to C implementation when SYCL is unavailable
 
-- `/Users/liuhongbo/work/AOM/avm_sycl/av2/encoder/av2_fwd_txfm_sycl.c`
+- `av2/encoder/av2_fwd_txfm_sycl.c`
   - C wrapper functions for forward transforms
   - Handles GPU memory allocation and data transfer
   - Falls back to C implementation when SYCL is unavailable
