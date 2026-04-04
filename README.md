@@ -15,6 +15,9 @@
   <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/stargazers">
     <img src="https://img.shields.io/github/stars/hbliu007/avm-sycl-gpu-acceleration?style=flat-square&logo=github" alt="Stars">
   </a>
+  <a href="https://trendshift.io/repositories/10988" target="_blank" rel="noopener">
+    <img src="https://trendshift.io/api/badge/repositories/10988" alt="Trendshift">
+  </a>
 </p>
 
 <p align="center">
@@ -225,6 +228,16 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
   url = {https://github.com/hbliu007/avm-sycl-gpu-acceleration}
 }
 ```
+
+## ⭐ Star History
+
+<a href="https://star-history.com/#hbliu007/avm-sycl-gpu-acceleration&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hbliu007/avm-sycl-gpu-acceleration&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hbliu007/avm-sycl-gpu-acceleration&type=Date" />
+   <img alt="Star History Chart" width="100%" src="https://api.star-history.com/svg?repos=hbliu007/avm-sycl-gpu-acceleration&type=Date" />
+ </picture>
+</a>
 
 ## 📜 License
 
