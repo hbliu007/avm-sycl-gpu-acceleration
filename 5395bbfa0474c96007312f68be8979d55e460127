@@ -1,0 +1,25 @@
+docs/images/hero-light.svg
+  15ffc695e74c47cc 1-143
+README.md
+  15ffc695e74c47cc 1-26,30,32-33,37,41,52-53,55-60,62-64,66,68,70-74,78,81,84,88,90-93,99,116-117,131-132,137,145,148,150,155,163,165-171,173-174,191,195,197-201,203,205-207,211-214,229,231,233,235-239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "5395bbfa0474c96007312f68be8979d55e460127",
+  "prompts": {
+    "15ffc695e74c47cc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "73a5b1d7-cfa5-4313-840b-f52fac70d732",
+        "model": "glm-5.1"
+      },
+      "human_author": "hbliu008",
+      "messages": [],
+      "total_additions": 244,
+      "total_deletions": 141,
+      "accepted_lines": 244,
+      "overriden_lines": 0
+    }
+  }
+}
