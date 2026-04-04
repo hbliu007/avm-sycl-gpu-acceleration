@@ -1,45 +1,44 @@
-# AVM SYCL GPU Acceleration
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/hero-light.svg">
+  <img alt="AVM SYCL GPU Acceleration — The Fastest Open-Source GPU Acceleration for AV2" width="100%" src="docs/images/hero-light.svg">
+</picture>
 
-<div align="center">
+<p align="center">
+  <img src="https://img.shields.io/github/actions/workflow/status/hbliu007/avm-sycl-gpu-acceleration/ci.yml?branch=main&style=flat-square&logo=github&label=CI" alt="CI">
+  <img src="https://img.shields.io/github/v/release/hbliu007/avm-sycl-gpu-acceleration?include_prereleases&style=flat-square&logo=github" alt="Release">
+  <img src="https://img.shields.io/github/downloads/hbliu007/avm-sycl-gpu-acceleration/total?style=flat-square&logo=github" alt="Downloads">
+  <img src="https://img.shields.io/badge/SYCL-2020-purple?style=flat-square&logo=khronosgroup" alt="SYCL 2020">
+  <img src="https://img.shields.io/badge/C%2B%2B-17-orange?style=flat-square&logo=cplusplus" alt="C++17">
+  <img src="https://img.shields.io/badge/GPU-NVIDIA%20%7C%20Intel%20%7C%20AMD%20%7C%20ARM-green?style=flat-square" alt="GPU Support">
+  <img src="https://img.shields.io/badge/License-BSD%203--Clause%20Clear-blue?style=flat-square" alt="License">
+  <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/stargazers">
+    <img src="https://img.shields.io/github/stars/hbliu007/avm-sycl-gpu-acceleration?style=flat-square&logo=github" alt="Stars">
+  </a>
+</p>
 
-![AVM SYCL Logo](.github/logo.svg)
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> · <a href="#-benchmarks">Benchmarks</a> · <a href="#-platform-support">Platforms</a> · <a href="#-documentation">Docs</a> · <a href="#-api-usage">API</a>
+</p>
 
-### The Fastest Open-Source GPU Acceleration for AV2 Video Encoding
-
-*⚡ 3-5x speedup • 🔄 Cross-platform: NVIDIA | Intel | AMD | ARM • 📦 Zero-copy RTCD*
-
-[![CI Build](https://img.shields.io/github/actions/workflow/status/hbliu007/avm-sycl-gpu-acceleration/ci.yml?branch=main&label=CI&logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/actions/workflows/ci.yml)
-[![Security](https://img.shields.io/github/actions/workflow/status/hbliu007/avm-sycl-gpu-acceleration/ci.yml?label=Security&logo=github&branch=main)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/security)
-[![GitHub release](https://img.shields.io/github/v/release/hbliu007/avm-sycl-gpu-acceleration?include_prereleases&logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/releases)
-[![GitHub downloads](https://img.shields.io/github/downloads/hbliu007/avm-sycl-gpu-acceleration/total?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/releases)
-[![License](https://img.shields.io/badge/License-BSD%203--Clause%20Clear-blue?logo=opensourceinitiative)](https://opensource.org/licenses/BSD-3-Clause-Clear)
-[![Stars](https://img.shields.io/github/stars/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/stargazers)
-[![Forks](https://img.shields.io/github/forks/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/network)
-[![Last Commit](https://img.shields.io/github/last-commit/hbliu007/avm-sycl-gpu-acceleration/commits/main&logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/commits/main)
-
-[![SYCL 2020](https://img.shields.io/badge/SYCL-2020-purple?logo=khronosgroup)](https://www.khronos.org/sycl/)
-[![C++17](https://img.shields.io/badge/C%2B%2B-17-orange?logo=cplusplus)](https://en.cppreference.com/w/cpp/17)
-[![Platform](https://img.shields.io/badge/Platform-NVIDIA%20%7C%20Intel%20%7C%20AMD%20%7C%20ARM-green)]()
-
-[Quick Start](#-quick-start) • [Benchmarks](#-real-performance-benchmarks) • [Documentation](#-documentation) • [Examples](#-examples)
-
-[中文](./README-zh.md) • English
-
-</div>
+<p align="center">
+  <a href="./README-zh.md">中文</a> · English
+</p>
 
 ---
 
-## 📊 Real Performance Benchmarks
+## 📊 Benchmarks
 
-> **Test Environment:** Intel Core i9-13900K + NVIDIA RTX 4090, Ubuntu 22.04, DPC++ 2024.0
+> [!IMPORTANT]
+> **3-5x real-world speedup** on AV2 encoding — verified on Intel Core i9-13900K + NVIDIA RTX 4090, Ubuntu 22.04, DPC++ 2024.0
 
 ### Encoding Throughput
 
-![AV2 GPU Acceleration Benchmark](.github/images/AV2-acc.png)
+<img src=".github/images/AV2-acc.png" alt="AV2 GPU Encoding Benchmark" width="100%">
 
 ### Kernel Performance
 
-![AV2 Kernel Performance](.github/images/AV2-acc2.png)
+<img src=".github/images/AV2-acc2.png" alt="AV2 Kernel Performance" width="100%">
 
 ### GPU Comparison
 
@@ -50,41 +49,54 @@
 | Intel Arc A770 | 65% | 1.3x |
 | AMD RX 7900 XTX | 71% | 1.2x |
 
-> 📈 **Detailed benchmarks:** See [BENCHMARKS.md](docs/benchmarks.md)
+<details>
+<summary><strong>📈 Detailed Test Results (Intel Xeon Gold 6530 + OpenCL)</strong></summary>
 
----
+| Test | Description | Time | Status |
+|------|-------------|------|:------:|
+| Vector Add | 1024 elements | 287.5 ms | ✅ PASSED |
+| DCT 8x8 | Transform kernel | 180.5 ms | ✅ PASSED |
+| SAD 16x16 | Motion estimation | 1.5 ms | ✅ PASSED |
+| Performance | 1000 DCT benchmark | 50.1 ms | ✅ PASSED |
 
-## 🎯 Demo
+- DCT 8x8 average: 50.14 μs
+- DCT throughput: 19,945 DCT/sec
+- All 4 tests passed ✅
 
-> 🌐 **Live Demo:** [Interactive GPU Benchmark](https://hbliu007.github.io/avm-sycl-gpu-acceleration/demo.html)
+See [BENCHMARKS.md](docs/benchmarks.md) for full results.
+
+</details>
+
+## 🌐 Live Demo
+
+> [!TIP]
+> **Try it now:** [Interactive GPU Benchmark](https://hbliu007.github.io/avm-sycl-gpu-acceleration/demo.html)
 > *RTX 4090 encoding 4K video at 38 fps with SYCL acceleration*
-
----
 
 ## ⚡ Quick Start
 
-### One-Line Install (Linux)
+### One-Line Install
 
 ```bash
+# Linux / macOS
 curl -fsSL https://raw.githubusercontent.com/hbliu007/avm-sycl-gpu-acceleration/main/install.sh | bash
-```
 
-### One-Line Install (Windows - PowerShell)
-
-```powershell
+# Windows (PowerShell)
 iwr -useb https://raw.githubusercontent.com/hbliu007/avm-sycl-gpu-acceleration/main/install.ps1 | iex
 ```
 
-### Docker (Instant Setup)
+### Docker
 
-```bash
-docker run -it --gpus all hbliu007/avm-sycl:latest
+```console
+$ docker run -it --gpus all hbliu007/avm-sycl:latest
+✓ SYCL context initialized on NVIDIA RTX 4090
+✓ 128 compute units, 24 GB global memory
 ```
 
 ### Manual Build
 
 ```bash
-# Prerequisites: Intel oneAPI DPC++
+# Prerequisites: Intel oneAPI DPC++ / AdaptiveCpp
 git clone https://github.com/hbliu007/avm-sycl-gpu-acceleration.git
 cd avm-sycl-gpu-acceleration
 source /opt/intel/oneapi/setvars.sh  # Linux
@@ -97,24 +109,14 @@ make -j$(nproc)
 ctest --output-on-failure
 ```
 
----
-
 ## 🖥️ Platform Support
-
-### GPU Hardware
 
 | Vendor | Architecture | Backend | DCT | SAD | Loop Filter | Intra |
 |--------|:------------:|:-------:|:---:|:---:|:-----------:|:-----:|
-| **NVIDIA** | RTX 40 Series | CUDA | ✅ | ✅ | ✅ | ✅ |
-| **NVIDIA** | RTX 30 Series | CUDA | ✅ | ✅ | ✅ | ✅ |
-| **Intel** | Arc A-Series | Level Zero | ✅ | ✅ | ✅ | ✅ |
-| **Intel** | Xe Integrated | Level Zero | ✅ | ✅ | ✅ | ✅ |
+| **NVIDIA** | RTX 40/30 Series | CUDA | ✅ | ✅ | ✅ | ✅ |
+| **Intel** | Arc / Xe | Level Zero | ✅ | ✅ | ✅ | ✅ |
 | AMD | RX 7000 Series | HIP | 🔄 | 🔄 | 🔄 | 🔄 |
 | ARM | Mali | OpenCL | 🔄 | 🔄 | 🔄 | 🔄 |
-
-> ✅ Full Support | 🔄 Experimental
-
-### Operating Systems
 
 | OS | Status | Notes |
 |:--:|:------:|:------|
@@ -123,54 +125,34 @@ ctest --output-on-failure
 | macOS 13+ | ⚠️ CPU Only | No GPU SYCL backend |
 | CentOS 8+ | ✅ Supported | Community maintained |
 
----
-
 ## 📦 Features
 
 | Feature | Description |
-|---------|-------------|
-| 🚀 **3-5x Speedup** | Real-world encoding performance gains |
+|:--------|:------------|
+| 🚀 **3-5x Speedup** | Real-world AV2 encoding performance gains |
 | 🔧 **Zero Integration** | Drop-in replacement for CPU functions |
 | 🎯 **Auto GPU Selection** | Intelligent device scoring algorithm |
 | 🔄 **CPU Fallback** | Automatic fallback when GPU unavailable |
 | 📊 **RTCD Compatible** | Works with existing dispatch mechanisms |
-| 🧪 **Well Tested** | Unit tests + performance benchmarks |
-
----
-
-## 🧪 Test Results
-
-### Verified Platform: Intel Xeon Gold 6530 + Intel OpenCL
-
-| Test | Description | Time | Status |
-|------|-------------|------|:------:|
-| Vector Add | 1024 elements | 287.5 ms | ✅ PASSED |
-| DCT 8x8 | Transform kernel | 180.5 ms | ✅ PASSED |
-| SAD 16x16 | Motion estimation | 1.5 ms | ✅ PASSED |
-| Performance | 1000 DCT benchmark | 50.1 ms | ✅ PASSED |
-
-**Performance Metrics:**
-- DCT 8x8 average: 50.14 μs
-- DCT throughput: 19,945 DCT/sec
-- All 4 tests passed ✅
-
----
+| 🧪 **Well Tested** | Unit tests + performance benchmarks on CI |
 
 ## 💻 API Usage
-
-### Minimal Example
 
 ```cpp
 #include "sycl_wrapper.hpp"
 
 int main() {
+    // Initialize — auto-selects best GPU
     auto& ctx = avm::sycl::SYCLContext::instance();
     ctx.initialize();
+    // GPU: "NVIDIA CUDA" CU: 128 MEM: 24 GB
 
+    // DCT 8x8 transform
     int16_t input[64] = {...};
     int32_t output[64];
     avm::sycl::fdct8x8(ctx.queue(), input, output);
 
+    // SAD 16x16 motion estimation
     uint8_t ref[256], cur[256];
     uint32_t sad = avm::sycl::sad16x16(ctx.queue(), ref, cur);
 
@@ -178,18 +160,18 @@ int main() {
 }
 ```
 
-### Device Info
+## 📖 Documentation
 
-```cpp
-auto& ctx = avm::sycl::SYCLContext::instance();
-std::cout << "GPU: " << ctx.backend_name()           // "NVIDIA CUDA"
-          << " CU: " << ctx.compute_units()           // 128
-          << " MEM: " << ctx.global_mem_size()/1e9;   // 24 GB
-```
+| Document | Description |
+|:---------|:------------|
+| [Architecture Guide](docs/architecture.md) | System design and kernel implementation |
+| [API Reference](docs/api.md) | Function signatures and usage |
+| [Integration Guide](docs/integration.md) | FFmpeg, OpenCV, GStreamer integration |
+| [Performance Tuning](docs/performance.md) | Optimization tips and techniques |
+| [Benchmarks](docs/benchmarks.md) | Detailed performance data across GPUs |
 
----
-
-## 📂 Project Structure
+<details>
+<summary><strong>📂 Project Structure</strong></summary>
 
 ```
 avm-sycl-gpu-acceleration/
@@ -206,48 +188,30 @@ avm-sycl-gpu-acceleration/
 └── .github/           # CI/CD + templates
 ```
 
----
-
-## 📖 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Architecture Guide](docs/architecture.md) | System design and kernel implementation |
-| [API Reference](docs/api.md) | Function signatures and usage |
-| [Integration Guide](docs/integration.md) | FFmpeg, OpenCV, GStreamer |
-| [Performance Tuning](docs/performance.md) | Optimization tips |
-| [Benchmarks](docs/benchmarks.md) | Detailed performance data |
-
----
+</details>
 
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-```bash
-git clone https://github.com/hbliu007/avm-sycl-gpu-acceleration.git
-cd avm-sycl-gpu-acceleration
-git checkout -b feature/my-feature
-ctest --output-on-failure
-git push && git push
-```
+1. Fork this repo
+2. Create feature branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push (`git push origin feature/amazing`)
+5. Open a Pull Request
 
----
+## 👥 Contributors
 
-## 📜 License
-
-BSD 3-Clause Clear License - see [LICENSE](LICENSE)
-
----
+<a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hbliu007/avm-sycl-gpu-acceleration&max=24&columns=8" alt="Contributors" />
+</a>
 
 ## 🙏 Acknowledgments
 
-- [AOMedia](https://aomedia.org/) - AV2 codec specification
-- [Intel oneAPI](https://www.intel.com/oneapi) - DPC++ compiler
-- [Khronos SYCL](https://www.khronos.org/sycl/) - SYCL specification
-- [AdaptiveCpp](https://github.com/AdaptiveCpp/AdaptiveCpp) - Portable SYCL
-
----
+- [AOMedia](https://aomedia.org/) — AV2 codec specification
+- [Intel oneAPI](https://www.intel.com/oneapi) — DPC++ compiler
+- [Khronos SYCL](https://www.khronos.org/sycl/) — SYCL specification
+- [AdaptiveCpp](https://github.com/AdaptiveCpp/AdaptiveCpp) — Portable SYCL
 
 ## 📄 Citation
 
@@ -262,18 +226,14 @@ BSD 3-Clause Clear License - see [LICENSE](LICENSE)
 }
 ```
 
+## 📜 License
+
+BSD 3-Clause Clear License — see [LICENSE](LICENSE)
+
 ---
 
-<div align="center">
-
-**⭐ Star this repo if you find it useful! ⭐**
-
-[![GitHub Star](https://img.shields.io/github/stars/hbliu007/avm-sycl-gpu-acceleration?style=social)](https://github.com/hbliu007/avm-sycl-gpu-acceleration)
-[![GitHub issues](https://img.shields.io/github/issues/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues)
-[![GitHub PRs](https://img.shields.io/github/issues-pr/hbliu007/avm-sycl-gpu-acceleration?logo=github)](https://github.com/hbliu007/avm-sycl-gpu-acceleration/pulls)
-
-Made with ❤️ by [hbliu007](https://github.com/hbliu007)
-
-[Report Bug](https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues) • [Request Feature](https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues) • [Discussions](https://github.com/hbliu007/avm-sycl-gpu-acceleration/discussions)
-
-</div>
+<p align="center">
+  <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration"><strong>GitHub</strong></a> ·
+  <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/issues">Issues</a> ·
+  <a href="https://github.com/hbliu007/avm-sycl-gpu-acceleration/discussions">Discussions</a>
+</p>
